@@ -59,11 +59,7 @@ public class Finger{
 	public Finger(String ip, Integer port, Integer maxReplyTime, FingerConfig config){
 		fingerConfig = config;
 		remoteIp = ip;
-		if (maxReplyTime != null) {
-			SocketConfig socketConfig = new SocketConfig();
-			socketConfig.setMaxReplyTime(maxReplyTime);
-			jiminal.setSocketConfig(socketConfig);
-		}
+		
 		jiminal = new Jiminal(ip, port, packageConfig, new JiminalCallback() {
 			
 			public void onReplyArrived(BasePackage r, Jiminal session) {
@@ -118,6 +114,12 @@ public class Finger{
 				}
 			}
 		});
+
+		if (maxReplyTime != null) {
+			SocketConfig socketConfig = new SocketConfig();
+			socketConfig.setMaxReplyTime(maxReplyTime);
+			jiminal.setSocketConfig(socketConfig);
+		}
 	}
 	
 	/**
