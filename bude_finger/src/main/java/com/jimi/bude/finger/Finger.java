@@ -86,13 +86,13 @@ public class Finger{
 					serialNo = session.getSerialNo();
 					PingCallBack callBack = fingerConfig.getPingCallBack();
 					if (callBack != null) {
-						callBack.onPackageArrvied((PingReplyPackage)r,(PingPackage) p, Finger.this);
+						callBack.onPackageArrvied((PingPackage)p, (PingReplyPackage)r, Finger.this);
 					}
 				}else if (p instanceof UpdatePackage) {
 					serialNo = session.getSerialNo();
 					UpdateCallBack callBack = fingerConfig.getUpdateCallBack();
 					if (callBack != null) {
-						callBack.onPackageArrvied((UpdateReplyPackage)r,(UpdatePackage) p, Finger.this);
+						callBack.onPackageArrvied((UpdatePackage)p,(UpdateReplyPackage)r, Finger.this);
 					}
 				}
 			}

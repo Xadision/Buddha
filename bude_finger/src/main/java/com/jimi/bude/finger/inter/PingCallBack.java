@@ -19,5 +19,5 @@ public interface PingCallBack{
 	 * @param r Ping回复包(不需要主动发送，只需要填充该回复包，方法结束后自动发送该回复包)
 	 * @param session 通信过程的会话
 	 */
-	public void onPackageArrvied(PingReplyPackage p, PingPackage r, Finger session);
+	public void onPackageArrvied(PingPackage p, PingReplyPackage r, Finger session);
 }

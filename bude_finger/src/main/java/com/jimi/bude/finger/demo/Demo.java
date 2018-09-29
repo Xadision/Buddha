@@ -60,12 +60,12 @@ public class Demo {
 		//配置接收到更新包后执行的方法
 		config.setUpdateCallBack(new UpdateCallBack() {
 			
-			public void onPackageArrvied(UpdateReplyPackage p, UpdatePackage r, Finger session) {
+			public void onPackageArrvied(UpdatePackage p, UpdateReplyPackage r, Finger session) {
 				//填充更新回复包
-				p.setResultCode(20);
+				r.setResultCode(20);
 				
 				Integer controllId = r.getControllId();
-				System.out.println("接收到更新包，controllId：" + controllId+"信息序列号：" + session.getSerialNo() + "MD5 :"  +r.getMd5());
+				System.out.println("接收到更新包，controllId：" + controllId+"信息序列号：" + session.getSerialNo() + "MD5 :"  +p.getMd5());
 				//填充CallBack包
 				CallBackPackage c = new CallBackPackage();
 				c.setControllId(controllId);

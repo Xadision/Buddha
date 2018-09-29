@@ -19,5 +19,5 @@ public interface UpdateCallBack{
 	 * @param r 更新回复包(不需要主动发送，只需要填充该回复包，方法结束后自动发送该回复包)
 	 * @param session 通信过程的会话
 	 */
-	public void onPackageArrvied(UpdateReplyPackage p, UpdatePackage r, Finger session);
+	public void onPackageArrvied(UpdatePackage p, UpdateReplyPackage r, Finger session);
 }
