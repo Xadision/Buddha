@@ -57,7 +57,7 @@ public class HttpUtil {
 				if (!path.exists()) {
 					path.mkdirs();
 				}
-				File file = FileUtil.findFile(filePath, fileName);
+				File file = CommonUtil.findFile(filePath, fileName);
 				if(file != null) {
 					file.delete();
 				}

@@ -5,11 +5,14 @@ import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.MessageDigest;
+import java.util.List;
 
 import org.apache.commons.codec.binary.Hex;
 
+import cc.darhao.dautils.api.StringUtil;
 
-public class FileUtil {
+
+public class CommonUtil {
 	
 	public static String  getFilePath(String basePath, String ...params) {
 		StringBuffer filePath = new StringBuffer();
@@ -98,6 +101,32 @@ public class FileUtil {
 		}
 		
 	}
+	
+	public static String parseBytesToXRadixString(List<Byte> bytes, int radix) {
+		StringBuffer sb = new StringBuffer();
+		for (Byte b : bytes) {
+			switch (radix) {
+			case 16:
+				String hexString = Integer.toHexString(b).toUpperCase();
+				hexString = StringUtil.fixLength(hexString, 2);
+				sb.append(hexString);
+				break;
+			case 10:
+				sb.append(Integer.toString(Byte.toUnsignedInt(b)));
+				break;
+			case 2:
+				String binString = Integer.toBinaryString(b);
+				binString = StringUtil.fixLength(binString, 8);
+				sb.append(binString);
+				break;
+			default:
+				break;
+			}
+			sb.append(" ");
+		}
+		return sb.toString().trim();
+	}
+	
 	public static void main(String[] args) {
 		System.out.println(getFilePath("BEAD","SMT","Display"));
 		System.out.println(getFileName("SMT", "Display", "3", "1", "0", "201801021225"));

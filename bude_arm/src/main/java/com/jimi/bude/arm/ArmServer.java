@@ -42,7 +42,7 @@ public class ArmServer {
 	private List<Jiminal> lists;
 	private static short packageId;
 	public static Map<Jiminal, String> jiminalMap;
-	public static Map<String, FingerClient> socketMap;
+	public static Map<String, FingerClient> fingerMap;
 	private static PackageConfig config;
 	private ArmClient armClient;
 
@@ -53,7 +53,7 @@ public class ArmServer {
 		config.add(UpdatePackage.class, true);
 		config.add(PingPackage.class, true);
 		jiminalMap = new ConcurrentHashMap<Jiminal, String>();
-		socketMap = new ConcurrentHashMap<String, FingerClient>();
+		fingerMap = new ConcurrentHashMap<String, FingerClient>();
 		packageId = DEFAULT_PACKAGE_ID;
 	}
 
@@ -87,11 +87,11 @@ public class ArmServer {
 			@Override
 			public void onPackageArrived(BasePackage p, BasePackage r, Jiminal session) {
 				if (p instanceof LoginPackage) {
-					LoginPackage recieve = (LoginPackage) p;
+					LoginPackage receive = (LoginPackage) p;
 					// 添加登录jiminal映射Map
-					String fingerName = recieve.getFingerName();
+					String fingerName = receive.getFingerName();
 					FingerClient finger = new FingerClient(fingerName, session);
-					ArmServer.socketMap.put(fingerName, finger);
+					ArmServer.fingerMap.put(fingerName, finger);
 					jiminalMap.put(session, fingerName);
 
 					synchronized (lists) {
@@ -101,10 +101,11 @@ public class ArmServer {
 					short tranPackageId = genPackageId();
 					LoginPackage login = new LoginPackage();
 					login.setPackageId(tranPackageId);
-					login.setArmName(recieve.getArmName());
-					login.setFingerName(recieve.getFingerName());
-					login.setFingerIp(recieve.getFingerIp());
-					login.setType(recieve.getType());
+					login.setArmName(receive.getArmName());
+					login.setFingerName(receive.getFingerName());
+					login.setFingerIp(receive.getFingerIp());
+					login.setType(receive.getType());
+					System.out.println("fingerIp:"+receive.getFingerIp() + receive.getFingerName() + receive.getArmName() + "    "+packageId);
 					try {
 						CountDownLatch countDownLatch = new CountDownLatch(1);
 						ArmClient.replyCountMap.put(tranPackageId, countDownLatch);
@@ -114,7 +115,7 @@ public class ArmServer {
 						LoginReplyPackage armRecieveReply = (LoginReplyPackage) ArmClient.replyPackage.get(tranPackageId);
 						if (armRecieveReply != null) {
 							LoginReplyPackage reply = (LoginReplyPackage) r;
-							reply.setPackageId(recieve.getPackageId());
+							reply.setPackageId(receive.getPackageId());
 							reply.setFingerName(armRecieveReply.getFingerName());
 							reply.setResultCode(armRecieveReply.getResultCode());
 							reply.setType(armRecieveReply.getType());
@@ -123,19 +124,19 @@ public class ArmServer {
 						e.printStackTrace();
 					}
 				} else if (p instanceof CallBackPackage) {
-					CallBackPackage recieve = (CallBackPackage) p;
+					CallBackPackage receive = (CallBackPackage) p;
 					short tranPackageId = genPackageId();
 					try {
 						CountDownLatch countDownLatch = new CountDownLatch(1);
 						ArmClient.replyCountMap.put(tranPackageId, countDownLatch);
-						armClient.sendCallBackPackage(recieve.getControllId(), (int) tranPackageId, recieve.getStatus(), recieve.getFingerName(), recieve.getType());
+						armClient.sendCallBackPackage(receive.getControllId(), (int) tranPackageId, receive.getStatus(), receive.getFingerName(), receive.getType());
 						countDownLatch.await(MAX_REPLY_TIME, TimeUnit.MILLISECONDS);
 						CallBackReplyPackage armRecieveReply = (CallBackReplyPackage) ArmClient.replyPackage.get(tranPackageId);
 						if (armRecieveReply != null) {
 							CallBackReplyPackage reply = (CallBackReplyPackage) r;
 							reply.setFingerName(armRecieveReply.getFingerName());
 							reply.setType(armRecieveReply.getType());
-							reply.setPackageId(recieve.getPackageId());
+							reply.setPackageId(receive.getPackageId());
 						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
@@ -150,7 +151,7 @@ public class ArmServer {
 				if (fingerName != null) {
 					System.out.println("fingerName : " + fingerName + "已断开");
 					jiminalMap.remove(session);
-					ArmServer.socketMap.remove(fingerName);
+					ArmServer.fingerMap.remove(fingerName);
 				} else {
 					synchronized (lists) {
 						lists.remove(session);
@@ -185,7 +186,7 @@ public class ArmServer {
 	/**
 	 * 启动SocketServer开始监听
 	 */
-	public void start() {
+	public void start() { 
 		new Thread(() -> {
 			jiminalServer.listenConnect();
 		}).start();

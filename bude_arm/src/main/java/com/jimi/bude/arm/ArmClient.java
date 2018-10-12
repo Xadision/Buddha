@@ -2,8 +2,6 @@ package com.jimi.bude.arm;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.Inet4Address;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -19,7 +17,7 @@ import com.jimi.bude.arm.pack.PongPackage;
 import com.jimi.bude.arm.pack.PongReplyPackage;
 import com.jimi.bude.arm.pack.UpdatePackage;
 import com.jimi.bude.arm.pack.UpdateReplyPackage;
-import com.jimi.bude.arm.util.FileUtil;
+import com.jimi.bude.arm.util.CommonUtil;
 import com.jimi.bude.arm.util.HttpUtil;
 
 import cc.darhao.jiminal.callback.JiminalCallback;
@@ -116,12 +114,10 @@ public class ArmClient {
 							login.setArmName(armName);
 							login.setType(ARM_TYPE);
 							login.setFingerName(DEFAULT_FINGER_NAME);
-							try {
-								login.setFingerIp(Inet4Address.getLocalHost().getHostAddress());
-							} catch (UnknownHostException e) {
-								e.printStackTrace();
-							}
+							login.setFingerIp(UNLESS_IP);
 							ArmClient.me.sendLoginPackage(login);
+						}else {
+							System.err.println("登录成功");
 						}
 					} else {
 						// 接收到设备端登录回复包
@@ -152,11 +148,11 @@ public class ArmClient {
 			@Override
 			public void onPackageArrived(BasePackage p, BasePackage r, Jiminal session) {
 				if (p instanceof UpdatePackage) {
-					UpdatePackage recieve = (UpdatePackage) p;
+					UpdatePackage receive = (UpdatePackage) p;
 					UpdateReplyPackage reply = (UpdateReplyPackage) r;
-					String fingerName = recieve.getFingerName();
-					FingerClient finger = ArmServer.socketMap.get(fingerName);
-					Integer controllId = recieve.getControllId();
+					String fingerName = receive.getFingerName();
+					FingerClient finger = ArmServer.fingerMap.get(fingerName);
+					Integer controllId = receive.getControllId();
 					//填充更新回复包
 					reply.setControllId(controllId);
 					if (finger == null) {
@@ -169,14 +165,14 @@ public class ArmClient {
 							public void run() {
 								//下载次数，最多2次
 								int downloadCount = 0;
-								String headName = recieve.getHeadName();
-								String faceName = recieve.getFaceName();
-								Integer firstCode = recieve.getFirstCode();
-								Integer secondCode = recieve.getSecondCode();
-								Integer debugCode = recieve.getDebugCode();
-								String suffixTime = recieve.getSuffixTime();
+								String headName = receive.getHeadName();
+								String faceName = receive.getFaceName();
+								Integer firstCode = receive.getFirstCode();
+								Integer secondCode = receive.getSecondCode();
+								Integer debugCode = receive.getDebugCode();
+								String suffixTime = receive.getSuffixTime();
 								System.out.println("suffixTime"+suffixTime);
-								String md5 = recieve.getMd5().replace(" ", "");
+								String md5 = receive.getMd5().replace(" ", "");
 								//填充转发给设备端的更新包
 								UpdatePackage tranPackage = new UpdatePackage();
 								tranPackage.setControllId(controllId);
@@ -187,19 +183,20 @@ public class ArmClient {
 								tranPackage.setSecondCode(secondCode);
 								tranPackage.setDebugCode(debugCode);
 								tranPackage.setSuffixTime(suffixTime);
-								tranPackage.setMd5(recieve.getMd5());
+								tranPackage.setMd5(receive.getMd5());
 								//拼接文件名和文件路径
-								String fileName = FileUtil.getFileName(headName, faceName, firstCode.toString(), secondCode.toString(), debugCode.toString(), suffixTime);
-								String filePath = FileUtil.getFilePath(getDownloadPath(), headName, faceName, firstCode.toString(), secondCode.toString(), debugCode.toString());
+								String fileName = CommonUtil.getFileName(headName, faceName, firstCode.toString(), secondCode.toString(), debugCode.toString(), suffixTime);
+								String filePath = CommonUtil.getFilePath(getDownloadPath(), headName, faceName, firstCode.toString(), secondCode.toString(), debugCode.toString());
 								synchronized (ArmClient.this.downloadPath) {
-									File bead = FileUtil.findFile(filePath, fileName);
+									File bead = CommonUtil.findFile(filePath, fileName);
 									if (bead != null) {
-										String beadMd5 = FileUtil.getMD5(bead);
+										String beadMd5 = CommonUtil.getMD5(bead);
 										//System.out.println("发送CallBack回复包:24，中转端校验Md5");
 										sendCallBackPackage(controllId, DEFAULT_PACKAGE_ID, CHECKING_BEAD_MD5, DEFAULT_FINGER_NAME, ARM_TYPE);
 										if (md5.toUpperCase().equals(beadMd5.toUpperCase())) {
 											//System.out.println("发送CallBack回复包:22，使用中转端本地缓存");
 											sendCallBackPackage(controllId,DEFAULT_PACKAGE_ID,USE_LOCAL_CACHE, DEFAULT_FINGER_NAME, ARM_TYPE);
+											finger.sendUpdatePackage(tranPackage);
 											return ;
 										}else {
 											bead.delete();
@@ -226,14 +223,14 @@ public class ArmClient {
 											continue;
 										}
 										//System.out.println("下载成功");
-										bead = FileUtil.findFile(filePath, fileName);
+										bead = CommonUtil.findFile(filePath, fileName);
 										if (bead == null) {
 											downloadCount++;
 											continue;
 										}
 										//System.out.println("发送CallBack回复包:20，中转端下载成功");
 										sendCallBackPackage(controllId,DEFAULT_PACKAGE_ID,DOWNLOAD_BEAD_SUCCEED, DEFAULT_FINGER_NAME, ARM_TYPE);
-										String beadMd5 = FileUtil.getMD5(bead);
+										String beadMd5 = CommonUtil.getMD5(bead);
 										//System.out.println("发送CallBack回复包:24，中转端校验Md5");
 										sendCallBackPackage(controllId,DEFAULT_PACKAGE_ID,CHECKING_BEAD_MD5, DEFAULT_FINGER_NAME, ARM_TYPE);
 										if (md5.toUpperCase().equals(beadMd5.toUpperCase())) {
@@ -261,7 +258,7 @@ public class ArmClient {
 
 				} else if (p instanceof PingPackage) {
 					//接收到ping包，转发ping包给客户端
-					for (Entry<String, FingerClient> entry : ArmServer.socketMap.entrySet()) {
+					for (Entry<String, FingerClient> entry : ArmServer.fingerMap.entrySet()) {
 						PingPackage tranPackage = new PingPackage();
 						entry.getValue().sendPingPackage(tranPackage);
 					}
@@ -283,6 +280,7 @@ public class ArmClient {
 				login.setFingerName(DEFAULT_FINGER_NAME);
 				login.setFingerIp(UNLESS_IP);
 				ArmClient.me.sendLoginPackage(login);
+				System.err.println("发送登录包");
 			}
 		});
 
