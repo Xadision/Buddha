@@ -14,7 +14,7 @@ import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
  * </pre>
  */
 public class _MappingKit {
-	
+
 	public static void mapping(ActiveRecordPlugin arp) {
 		arp.addMapping("action_log", "id", ActionLog.class);
 		arp.addMapping("arm", "name", Arm.class);
@@ -31,4 +31,3 @@ public class _MappingKit {
 		arp.addMapping("user", "id", User.class);
 	}
 }
-

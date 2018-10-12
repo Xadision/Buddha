@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.jimi.bude</groupId>
   <artifactId>bude_server</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>war</packaging>
    
    <properties>
@@ -36,7 +36,7 @@
 			<!-- Maven 自带的中央仓库使用的Id为central 如果其他的仓库声明也是用该Id 就会覆盖中央仓库的配置 -->
 			<id>nexus</id>
 			<name>nexus</name>
-			<url>http://10.10.11.110:7071/nexus/content/repositories/thirdparty/</url>
+			<url>http://10.10.11.110:8081/repository/maven-releases/</url>
 		</repository>
 	</repositories>
 	
@@ -117,6 +117,49 @@
 		    <version>1.11</version>
 		</dependency>
 	  
+	  		<dependency>
+    		<groupId>org.apache.httpcomponents</groupId>
+    		<artifactId>httpclient</artifactId>
+    		<version>4.5.6</version>
+		</dependency>
+		
+		<dependency>
+    		<groupId>org.apache.httpcomponents</groupId>
+    		<artifactId>httpcore</artifactId>
+    		<version>4.4.10</version>
+		</dependency>	
+		
+		<dependency>
+    		<groupId>commons-logging</groupId>
+    		<artifactId>commons-logging</artifactId>
+    		<version>1.1.1</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>cc.darhao</groupId>
+			<artifactId>jiminal</artifactId>
+			<version>2.1.2</version>
+		</dependency> 
+		
+		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-pool2 -->
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-pool2</artifactId>
+		    <version>2.6.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
+		<dependency>
+		    <groupId>redis.clients</groupId>
+		    <artifactId>jedis</artifactId>
+		    <version>2.9.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/de.ruedigermoeller/fst -->
+		<dependency>
+		    <groupId>de.ruedigermoeller</groupId>
+		    <artifactId>fst</artifactId>
+		    <version>2.57</version>
+		</dependency>
+		
   </dependencies>
   
   

@@ -1,19 +1,15 @@
 package com.jimi.bude.controller;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import com.jfinal.core.Controller;
-import com.jfinal.kit.PathKit;
-import com.jfinal.plugin.activerecord.Page;
-import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.upload.UploadFile;
-import com.jimi.bude.model.Bead;
-import com.jimi.bude.model.vo.BeadDetailsVO;
-import com.jimi.bude.model.vo.PageUtil;
+import com.jimi.bude.annotation.Open;
+import com.jimi.bude.exception.ParameterException;
 import com.jimi.bude.service.BeadService;
-import com.jimi.bude.util.FileUtil;
+import com.jimi.bude.util.CommonUtil;
 import com.jimi.bude.util.ResultUtil;
 
 /**
@@ -26,7 +22,7 @@ import com.jimi.bude.util.ResultUtil;
 public class BeadController extends Controller {
 
 	BeadService beadService = BeadService.me;
-	
+
 	/**
 	 * 上传文件
 	 * @param file 文件
@@ -34,42 +30,53 @@ public class BeadController extends Controller {
 	 * @param updateDescribe 更新描述
 	 * @param md5 文件md5校验码
 	 */
-	public void upload(UploadFile file, String alias, String updateDescribe,String md5) {
-		file = getFile();
-		String fileName = file.getFileName();
-		String filePath = file.getUploadPath();
-		alias = getPara("alias");
-		updateDescribe = getPara("updateDescribe");
-		String headName = "";
-		String faceName = "";
-		String suffixTime = "";
-		Integer firstCode = null;
-		Integer secondCode = null;
-		Integer debugCode = null;
+	public synchronized void upload(UploadFile file, String alias, String updateDescribe, String md5) {
 		try {
-			String [] array = fileName.split("_");
-			String [] name = array[0].split("-");
-			String [] version = array[1].split("\\.");
-			headName = name[0];
-			faceName = name[1];
-			firstCode = Integer.valueOf(version[0]);
-			secondCode = Integer.valueOf(version[1]);
-			debugCode = Integer.valueOf(version[2]);
-			suffixTime= array[2].split("\\.")[0].substring(0, 12);
-		} catch (Exception e) {
-			file.getFile().delete();
-			renderJson(ResultUtil.failed(401,"fileName is not in the right format"));
-			return ;
+			file = getFile();
+			if (file == null) {
+				throw new ParameterException("the uploadFile is null");
+			}
+			String fileName = file.getFileName();
+			alias = getPara("alias");
+			updateDescribe = getPara("updateDescribe");
+			String headName = "";
+			String faceName = "";
+			String suffixTime = "";
+			Integer firstCode = null;
+			Integer secondCode = null;
+			Integer debugCode = null;
+			try {
+				String[] array = fileName.split("_");
+				String[] name = array[0].split("-");
+				String[] version = array[1].split("\\.");
+				headName = name[0];
+				faceName = name[1];
+				firstCode = Integer.valueOf(version[0]);
+				secondCode = Integer.valueOf(version[1]);
+				debugCode = Integer.valueOf(version[2]);
+				suffixTime = array[2].split("\\.")[0];
+				if (suffixTime.length() != 12 || !checkSuffixTime(suffixTime)) {
+					throw new ParameterException("fileName is not in the right format");
+				}
+			} catch (Exception e) {
+				throw new ParameterException("fileName is not in the right format");
+			}
+			if (alias == null || updateDescribe == null || md5 == null) {
+				throw new ParameterException("Parameters can not be null");
+			}
+			if (md5.trim().equals("") || md5.length() != 32) {
+				throw new ParameterException("md5 is not in the right format");
+			}
+			ResultUtil result = beadService.upload(file.getFile(), fileName, headName, faceName, firstCode, secondCode, debugCode, suffixTime, alias, updateDescribe, md5);
+			renderJson(result);
+		} finally {
+			if (file != null) {
+				file.getFile().delete();
+			}
 		}
-		if (md5 == null || md5.trim().equals("") || md5.length() != 32) {
-			file.getFile().delete();
-			renderJson(ResultUtil.failed(401,"md5 is not in the right format"));
-			return ;
-		}
-		ResultUtil result = beadService.upload(file.getFile(), fileName, filePath, headName, faceName, firstCode, secondCode, debugCode, suffixTime, alias, updateDescribe, md5);
-		renderJson(result);
+
 	}
-	
+
 	/**
 	 * 下载软件包
 	 * @param headName 项目名
@@ -79,39 +86,49 @@ public class BeadController extends Controller {
 	 * @param debugCode 修正版本号
 	 * @param suffixTime 后缀时间
 	 */
+	@Open
 	public void download(String headName, String faceName, Integer firstCode, Integer secondCode, Integer debugCode, String suffixTime) {
-		String fileName = FileUtil.getFileName(headName, faceName, firstCode.toString(), secondCode.toString(), debugCode.toString(), suffixTime);
-		String filePath = FileUtil.getFilePath("BEAD", headName, faceName);
-		File file = FileUtil.findFile(filePath, fileName);
+		if (headName == null || faceName == null || firstCode == null || secondCode == null || debugCode == null || suffixTime == null) {
+			renderNull();
+			return;
+		}
+		String fileName = CommonUtil.getFileName(headName, faceName, firstCode.toString(), secondCode.toString(), debugCode.toString(), suffixTime);
+		String filePath = CommonUtil.getFilePath("BEAD", headName, faceName);
+		File file = CommonUtil.findFile(filePath, fileName);
 		if (file == null) {
 			renderNull();
-			//renderJson(ResultUtil.failed(501, "file is not exist"));
+			// renderJson(ResultUtil.failed(501, "file is not exist"));
 			return;
 		}
 		renderFile(file);
 	}
-	
+
+	/**
+	 * 更新软件包信息
+	 * @param beadId
+	 * @param alias 别名
+	 * @param updateDescribe 更新描述
+	 */
 	public void update(Integer beadId, String alias, String updateDescribe) {
 		if (beadId == null) {
-			renderJson(ResultUtil.failed(401, "BeadId can not be null"));
-			return ;
+			throw new ParameterException("Parameters can not be null");
 		}
 		ResultUtil result = beadService.update(beadId, alias, updateDescribe);
 		renderJson(result);
 	}
+
 	/**
 	 * 查询主版本号
 	 * @param faceId 模块ID
- 	 */
+	 */
 	public void selectFirstCode(Integer faceId) {
 		if (faceId == null) {
-			renderJson(ResultUtil.failed(401, "Parameters can not be null"));
-			return ;
+			throw new ParameterException("Parameters can not be null");
 		}
-		List<Bead> beads = beadService.selectFirstCode(faceId);
-		renderJson(ResultUtil.succeed(beads));
+		ResultUtil result = beadService.selectFirstCode(faceId);
+		renderJson(result);
 	}
-	
+
 	/**
 	 * 查询次版本号
 	 * @param faceId 模块ID
@@ -119,13 +136,12 @@ public class BeadController extends Controller {
 	 */
 	public void selectSecondCode(Integer faceId, Integer firstCode) {
 		if (faceId == null || firstCode == null) {
-			renderJson(ResultUtil.failed(401, "Parameters can not be null"));
-			return ;
+			throw new ParameterException("Parameters can not be null");
 		}
-		List<Bead> beads = beadService.selectSecondCode(faceId, firstCode);
-		renderJson(ResultUtil.succeed(beads));
+		ResultUtil result = beadService.selectSecondCode(faceId, firstCode);
+		renderJson(result);
 	}
-	
+
 	/**
 	 * 查询修正版本号
 	 * @param faceId 模块ID
@@ -134,13 +150,12 @@ public class BeadController extends Controller {
 	 */
 	public void selectDebugCode(Integer faceId, Integer firstCode, Integer secondCode) {
 		if (faceId == null || firstCode == null || secondCode == null) {
-			renderJson(ResultUtil.failed(401, "Parameters can not be null"));
-			return ;
+			throw new ParameterException("Parameters can not be null");
 		}
-		List<Bead> beads = beadService.selectDebugCode(faceId, firstCode, secondCode);
-		renderJson(ResultUtil.succeed(beads));
+		ResultUtil result = beadService.selectDebugCode(faceId, firstCode, secondCode);
+		renderJson(result);
 	}
-	
+
 	/**
 	 * 查询后缀时间
 	 * @param faceId 模块ID
@@ -150,13 +165,12 @@ public class BeadController extends Controller {
 	 */
 	public void selectSuffixTime(Integer faceId, Integer firstCode, Integer secondCode, Integer debugCode) {
 		if (faceId == null || firstCode == null || secondCode == null || debugCode == null) {
-			renderJson(ResultUtil.failed(401, "Parameters can not be null"));
-			return ;
+			throw new ParameterException("Parameters can not be null");
 		}
-		List<Bead> beads = beadService.selectSuffixTime(faceId, firstCode, secondCode, debugCode);
-		renderJson(ResultUtil.succeed(beads));
+		ResultUtil result = beadService.selectSuffixTime(faceId, firstCode, secondCode, debugCode);
+		renderJson(result);
 	}
-	
+
 	/**
 	 * 查询软件包信息
 	 * @param faceId 模块ID
@@ -165,24 +179,45 @@ public class BeadController extends Controller {
 	 * @param debugCode 修正版本号(可空)
 	 */
 	public void select(Integer faceId, Integer firstCode, Integer secondCode, Integer debugCode, String suffixTime, Integer currentPage, Integer pageSize) {
-		if(faceId == null) {
-			renderJson(ResultUtil.failed(401, "faceId can not be null"));
-			return ;
+		if (faceId == null) {
+			throw new ParameterException("faceId can not be null");
 		}
-		PageUtil<BeadDetailsVO> beads = beadService.select(faceId, firstCode, secondCode, debugCode, suffixTime, currentPage, pageSize);
-		renderJson(ResultUtil.succeed(beads));
+		if ((currentPage == null || pageSize == null) && !(currentPage == null && pageSize == null)) {
+			throw new ParameterException("currentPage and pageSize should either empty or not empty");
+		}
+		if (!(currentPage == null && pageSize == null) && (currentPage <= 0 || pageSize <= 0)) {
+			throw new ParameterException("currentPage and pageSize must be greater than 0");
+		}
+		ResultUtil result = beadService.select(faceId, firstCode, secondCode, debugCode, suffixTime, currentPage, pageSize);
+		renderJson(result);
 	}
-	
+
 	/**
 	 * 删除软件包
 	 * @param beadId
 	 */
 	public void delete(Integer beadId) {
 		if (beadId == null) {
-			renderJson(ResultUtil.failed(401, "beadId can not be null"));
-			return ;
+			throw new ParameterException("beadId can not be null");
 		}
 		ResultUtil result = beadService.delete(beadId);
 		renderJson(result);
+	}
+
+	public boolean checkSuffixTime(String suffixTime) {
+		String year = suffixTime.substring(0, 4);
+		String month = suffixTime.substring(4, 6);
+		String day = suffixTime.substring(6, 8);
+		String hour = suffixTime.substring(8, 10);
+		String minute = suffixTime.substring(10, 12);
+		String time = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":00";
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			formatter.parse(time);
+		} catch (ParseException e) {
+			return false;
+		}
+		return true;
+
 	}
 }
