@@ -5,9 +5,9 @@ import cc.darhao.jiminal.annotation.Protocol;
 import cc.darhao.jiminal.pack.BasePackage;
 
 @Protocol(0x51)
-public class PongPackage extends BasePackage{
+public class PongPackage extends BasePackage {
 
-	@Parse(value = {0,64}, utf8 = true)
+	@Parse(value = {0, 64}, utf8 = true)
 	private String fingerName;
 
 	public String getFingerName() {
@@ -17,5 +17,5 @@ public class PongPackage extends BasePackage{
 	public void setFingerName(String fingerName) {
 		this.fingerName = fingerName;
 	}
-	
+
 }

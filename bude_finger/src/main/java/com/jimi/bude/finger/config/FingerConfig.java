@@ -22,6 +22,7 @@ public class FingerConfig {
 	private UpdateCallBack updateCallBack;
 	private ConnectCallBack connectCallBack;
 	private ExceptionCallBack exceptionCallBack;
+
 	public LoginReplyCallBack getLoginReplyCallBack() {
 		return loginReplyCallBack;
 	}
@@ -69,6 +70,5 @@ public class FingerConfig {
 	public void setExceptionCallBack(ExceptionCallBack exceptionCallBack) {
 		this.exceptionCallBack = exceptionCallBack;
 	}
-	
-	
+
 }

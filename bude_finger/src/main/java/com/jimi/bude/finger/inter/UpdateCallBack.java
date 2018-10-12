@@ -11,8 +11,8 @@ import com.jimi.bude.finger.pack.UpdateReplyPackage;
  * @author 汤如杰
  * @date 2018年9月18日
  */
-public interface UpdateCallBack{
-	
+public interface UpdateCallBack {
+
 	/**
 	 * 更新包到达方法
 	 * @param p 接收到更新包

@@ -11,7 +11,7 @@ import com.jimi.bude.finger.pack.CallBackReplyPackage;
  * @date 2018年9月18日
  */
 public interface CallBackReplyCallBack {
-	
+
 	/**
 	 * CallBack回复包到达方法
 	 * @param r 接收到的CallBack回复包

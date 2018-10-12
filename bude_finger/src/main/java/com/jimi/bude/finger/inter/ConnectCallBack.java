@@ -10,7 +10,7 @@ import com.jimi.bude.finger.Finger;
  * @date 2018年9月18日
  */
 public interface ConnectCallBack {
-	
+
 	/**
 	 * 连接成功调用方法
 	 * @param session 通信过程的会话

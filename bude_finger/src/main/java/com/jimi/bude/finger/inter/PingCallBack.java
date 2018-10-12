@@ -11,8 +11,8 @@ import com.jimi.bude.finger.pack.PingReplyPackage;
  * @author 汤如杰
  * @date 2018年9月18日
  */
-public interface PingCallBack{
-	
+public interface PingCallBack {
+
 	/**
 	 * Ping包到达方法
 	 * @param p 接收到的Ping包
