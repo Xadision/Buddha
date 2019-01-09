@@ -5,6 +5,7 @@ import com.jimi.bude.exception.ParameterException;
 import com.jimi.bude.service.BodyService;
 import com.jimi.bude.util.ResultUtil;
 
+
 /**
  * 中转组管理控制层
  * @type BodyController
@@ -15,6 +16,7 @@ import com.jimi.bude.util.ResultUtil;
 public class BodyController extends Controller {
 
 	private BodyService bodyService = BodyService.me;
+
 
 	/**
 	 * 添加中转组
@@ -28,6 +30,7 @@ public class BodyController extends Controller {
 		renderJson(result);
 	}
 
+
 	/**
 	 * 删除中转组
 	 * @param bodyId
@@ -39,6 +42,7 @@ public class BodyController extends Controller {
 		ResultUtil result = bodyService.delete(bodyId);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 更新中转组名称
@@ -52,6 +56,7 @@ public class BodyController extends Controller {
 		ResultUtil result = bodyService.update(bodyId, bodyName);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 查询中转组
@@ -68,6 +73,7 @@ public class BodyController extends Controller {
 		ResultUtil result = bodyService.select(currentPage, pageSize);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 查询中转组下中转端

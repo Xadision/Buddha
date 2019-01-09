@@ -13,6 +13,7 @@ import com.jimi.bude.util.ResultUtil;
 
 import cc.darhao.dautils.api.ResourcesUtil;
 
+
 /**
  * 错误Logger拦截器
  * <br>
@@ -33,6 +34,7 @@ public class ErrorLogInterceptor implements Interceptor {
 		}
 	}
 
+
 	@Override
 	public void intercept(Invocation invocation) {
 		try {
@@ -50,6 +52,7 @@ public class ErrorLogInterceptor implements Interceptor {
 			invocation.getController().renderJson(ResultUtil.failed(result, message));
 		}
 	}
+
 
 	/**
 	 * 根据异常类获取返回码

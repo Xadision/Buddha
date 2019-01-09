@@ -6,9 +6,13 @@ import com.jimi.bude.model.Bead;
 import com.jimi.bude.model.Finger;
 import com.jimi.bude.util.ResultUtil;
 
+
 public class FingerService {
+
 	private static final String SELECT_EXIST_FINGER_SQL = "select * from finger where name = ? and arm_name = ?";
+	
 	public static final FingerService me = new FingerService();
+
 
 	public ResultUtil add(String fingerName, String armName, Integer beadId) {
 		Arm arm = Arm.dao.findById(armName);
@@ -32,6 +36,7 @@ public class FingerService {
 		return ResultUtil.succeed();
 	}
 
+
 	public ResultUtil delete(String fingerName, String armName) {
 		String result = "";
 		Finger finger = Finger.dao.findFirst(SELECT_EXIST_FINGER_SQL, fingerName, armName);
@@ -48,10 +53,12 @@ public class FingerService {
 		return ResultUtil.succeed();
 	}
 
+
 	public Finger select(String fingerName, String armName) {
 		Finger finger = Finger.dao.findFirst(SELECT_EXIST_FINGER_SQL, fingerName, armName);
 		return finger;
 	}
+
 
 	public void update(Finger finger) {
 		finger.update();

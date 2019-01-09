@@ -14,6 +14,7 @@ import com.jimi.bude.model.vo.PageUtil;
 import com.jimi.bude.service.base.SelectService;
 import com.jimi.bude.util.ResultUtil;
 
+
 /**
  * 中转组业务逻辑层
  * @type BodyService
@@ -22,10 +23,13 @@ import com.jimi.bude.util.ResultUtil;
  * @date 2018年9月4日
  */
 public class BodyService extends SelectService {
+
 	private static final String SELECT_BODY_EXIST_SQL = "select * from body where name = ?";
 
-	private static SelectService selectService = Enhancer.enhance(SelectService.class);
 	public static final BodyService me = new BodyService();
+	
+	private static SelectService selectService = Enhancer.enhance(SelectService.class);
+
 
 	/**
 	 * 添加中转组
@@ -43,6 +47,7 @@ public class BodyService extends SelectService {
 		body.setName(bodyName).save();
 		return ResultUtil.succeed();
 	}
+
 
 	/**
 	 * 删除中转组
@@ -65,6 +70,7 @@ public class BodyService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	/**
 	 * 更新中转组名称
 	 * @param bodyId
@@ -82,6 +88,7 @@ public class BodyService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	/**
 	 * 查询中转组下的中转端
 	 * @param bodyId
@@ -92,16 +99,17 @@ public class BodyService extends SelectService {
 	public ResultUtil selectArm(Integer bodyId, Integer currentPage, Integer pageSize) {
 		PageUtil<ArmVO> pageUtil = new PageUtil<>();
 		Page<Record> pageRecord = new Page<>();
-		List<ArmVO> list = new ArrayList<ArmVO>();
+		List<ArmVO> armVOs = new ArrayList<ArmVO>();
 		String filter = "body_id = " + bodyId;
 		String[] tables = {"body", "arm"};
 		String[] refers = {"body.id = arm.body_id"};
 		String[] discard = {"body.id", "body.name"};
 		pageRecord = selectService.select(tables, refers, currentPage, pageSize, null, null, filter, discard);
-		list = ArmVO.fillList(pageRecord.getList());
-		pageUtil.fill(pageRecord, list);
+		armVOs = ArmVO.fillList(pageRecord.getList());
+		pageUtil.fill(pageRecord, armVOs);
 		return ResultUtil.succeed(pageUtil);
 	}
+
 
 	/**
 	 * 查询中转组
@@ -112,10 +120,10 @@ public class BodyService extends SelectService {
 	public ResultUtil select(Integer currentPage, Integer pageSize) {
 		PageUtil<BodyVO> pageUtil = new PageUtil<>();
 		Page<Record> pageRecord = new Page<>();
-		List<BodyVO> list = new ArrayList<BodyVO>();
+		List<BodyVO> bodyVOs = new ArrayList<BodyVO>();
 		pageRecord = selectService.select("body", currentPage, pageSize, null, null, null, null);
-		list = BodyVO.fillList(pageRecord.getList());
-		pageUtil.fill(pageRecord, list);
+		bodyVOs = BodyVO.fillList(pageRecord.getList());
+		pageUtil.fill(pageRecord, bodyVOs);
 		return ResultUtil.succeed(pageUtil);
 	}
 }

@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
-import com.jimi.bude.entity.ControllType;
-import com.jimi.bude.entity.Infomation;
+import com.jimi.bude.entity.ControlType;
+import com.jimi.bude.entity.Information;
 import com.jimi.bude.model.Arm;
 import com.jimi.bude.model.Finger;
 import com.jimi.bude.pack.CallBackPackage;
@@ -23,7 +23,7 @@ import com.jimi.bude.pack.PongPackage;
 import com.jimi.bude.pack.PongReplyPackage;
 import com.jimi.bude.pack.UpdatePackage;
 import com.jimi.bude.pack.UpdateReplyPackage;
-import com.jimi.bude.redis.ControllRedisDao;
+import com.jimi.bude.redis.ControlRedisDao;
 import com.jimi.bude.service.ArmService;
 import com.jimi.bude.service.FingerService;
 import com.jimi.bude.service.SocketLogService;
@@ -36,6 +36,7 @@ import cc.darhao.jiminal.pack.BasePackage;
 import cc.darhao.jiminal.socket.Jiminal;
 import cc.darhao.jiminal.socket.JiminalServer;
 
+
 /**
  * BudeSocket监听器
  * @type Bude
@@ -44,25 +45,45 @@ import cc.darhao.jiminal.socket.JiminalServer;
  * @date 2018年10月8日
  */
 public class Bude {
-	public static Bude me;
-	private static JiminalServer BudeSocket;
+	
 	private static final int ARM_TYPE = 0;
+	
 	private static final int FINGER_TYPE = 1;
+	
 	private static final int DEFAULE_PACKAGE_ID = 0;
+	
 	private static final int SUCCEED = 20;
+	
 	private static final int FAIL = 41;
+	
 	private static final String DEFAULT_FINGER_NAME = "---";
-	private static String loaclhost;
+	
+	
+	public static Bude me;
+	
+	private static JiminalServer BudeSocket;
+	
+	private static String localhost;
+	
 	private static List<Jiminal> connectList;
+	
 	public static Map<String, ArmClient> armClientMap;
+	
 	public static Map<Jiminal, String> jiminalMap;
-	public static Map<Short, Infomation> controllMap;
+	
+	public static Map<Short, Information> InformationMap;
+	
 	public static Map<Short, CountDownLatch> countDownMap;
 
 	private static PackageConfig config;
+	
 	private static ArmService armService = ArmService.me;
+	
 	private static FingerService fingerService = FingerService.me;
+	
 	private static SocketLogService socketLogService = SocketLogService.me;
+	
+	
 	static {
 		config = new PackageConfig();
 		config.add(LoginPackage.class, false);
@@ -73,20 +94,22 @@ public class Bude {
 
 		jiminalMap = new ConcurrentHashMap<Jiminal, String>();
 		armClientMap = new ConcurrentHashMap<String, ArmClient>();
-		controllMap = new ConcurrentHashMap<Short, Infomation>();
+		InformationMap = new ConcurrentHashMap<Short, Information>();
 		countDownMap = new ConcurrentHashMap<Short, CountDownLatch>();
 		connectList = new ArrayList<>();
 		BudeSocket = null;
 		try {
-			loaclhost = Inet4Address.getLocalHost().getHostAddress();
+			localhost = Inet4Address.getLocalHost().getHostAddress();
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
 		me = new Bude();
 	}
 
+
 	private Bude() {
 	}
+
 
 	/**
 	 * 配置Socket监听器
@@ -100,10 +123,10 @@ public class Bude {
 				public void onReplyArrived(BasePackage r, Jiminal session) {
 					if (r instanceof UpdateReplyPackage) {
 						// 接收到更新回复包
-						socketLogService.add(r, UpdateReplyPackage.class, session.getRemoteIp(), loaclhost);
+						socketLogService.add(r, UpdateReplyPackage.class, session.getRemoteIp(), localhost);
 						UpdateReplyPackage receive = (UpdateReplyPackage) r;
-						short controllId = (short) receive.getControllId();
-						CountDownLatch countDownLatch = countDownMap.get(controllId);
+						short controlId = (short) receive.getControllId();
+						CountDownLatch countDownLatch = countDownMap.get(controlId);
 						if (countDownLatch != null) {
 							if (receive.getResultCode() == SUCCEED) {
 								countDownLatch.countDown();
@@ -111,7 +134,7 @@ public class Bude {
 						}
 					} else if (r instanceof PingReplyPackage) {
 						// 接收到Ping回复包
-						socketLogService.add(r, PingReplyPackage.class, session.getRemoteIp(), loaclhost);
+						socketLogService.add(r, PingReplyPackage.class, session.getRemoteIp(), localhost);
 						String armName = jiminalMap.get(session);
 						if (armName != null) {
 							Arm arm = armService.select(armName);
@@ -123,11 +146,12 @@ public class Bude {
 					}
 				}
 
+
 				@Override
 				public void onPackageArrived(BasePackage p, BasePackage r, Jiminal session) {
 					if (p instanceof LoginPackage) {
 						// 接收到登录包
-						socketLogService.add(p, LoginPackage.class, session.getRemoteIp(), loaclhost);
+						socketLogService.add(p, LoginPackage.class, session.getRemoteIp(), localhost);
 						LoginPackage receive = (LoginPackage) p;
 						LoginReplyPackage reply = (LoginReplyPackage) r;
 						if (receive.getType() == ARM_TYPE) {
@@ -174,10 +198,10 @@ public class Bude {
 								}
 							}
 						}
-						socketLogService.add(r, LoginReplyPackage.class, loaclhost, session.getRemoteIp());
+						socketLogService.add(r, LoginReplyPackage.class, localhost, session.getRemoteIp());
 					} else if (p instanceof PongPackage) {
 						// 接收到Pong包
-						socketLogService.add(p, PongPackage.class, session.getRemoteIp(), loaclhost);
+						socketLogService.add(p, PongPackage.class, session.getRemoteIp(), localhost);
 						PongPackage receive = (PongPackage) p;
 						String armName = jiminalMap.get(session);
 						if (armName != null) {
@@ -188,10 +212,10 @@ public class Bude {
 								fingerService.update(finger);
 							}
 						}
-						socketLogService.add(r, PongReplyPackage.class, loaclhost, session.getRemoteIp());
+						socketLogService.add(r, PongReplyPackage.class, localhost, session.getRemoteIp());
 					} else if (p instanceof CallBackPackage) {
 						// 接收到CallBack包
-						socketLogService.add(p, CallBackPackage.class, session.getRemoteIp(), loaclhost);
+						socketLogService.add(p, CallBackPackage.class, session.getRemoteIp(), localhost);
 						CallBackPackage receive = (CallBackPackage) p;
 						CallBackReplyPackage reply = (CallBackReplyPackage) r;
 
@@ -205,15 +229,15 @@ public class Bude {
 							reply.setFingerName(receive.getFingerName());
 							reply.setType(FINGER_TYPE);
 						}
-						short controllId = (short) receive.getControllId();
+						short controlId = (short) receive.getControllId();
 						int status = receive.getStatus();
-						Infomation info = controllMap.get(controllId);
+						Information info = InformationMap.get(controlId);
 						String armName = info.getArmName();
 						String fingerName = info.getFingerName();
 						switch (info.getType()) {
 						// CallBack包对应更新请求
 						case UPDATE:
-							ControllRedisDao.put(armName, fingerName, ControllType.UPDATE, status);
+							ControlRedisDao.put(armName, fingerName, ControlType.UPDATE, status);
 							if (status == 26) {
 								Finger finger = fingerService.select(fingerName, armName);
 								finger.setBeadId(info.getBeadId());
@@ -223,14 +247,15 @@ public class Bude {
 							break;
 						// CallBack包对应重启请求
 						case RESTART:
-							ControllRedisDao.put(armName, fingerName, ControllType.RESTART, status);
+							ControlRedisDao.put(armName, fingerName, ControlType.RESTART, status);
 							break;
 						default:
 							break;
 						}
-						socketLogService.add(r, CallBackReplyPackage.class, loaclhost, session.getRemoteIp());
+						socketLogService.add(r, CallBackReplyPackage.class, localhost, session.getRemoteIp());
 					}
 				}
+
 
 				@Override
 				public void onCatchException(Exception e, Jiminal session) {
@@ -249,6 +274,7 @@ public class Bude {
 					session.close();
 				}
 
+
 				@Override
 				public void onCatchClient(Jiminal session) {
 					// 捕获到客户端连接，添加进connectList
@@ -260,6 +286,7 @@ public class Bude {
 		}
 	}
 
+
 	/**
 	 * 开启监听器
 	 */
@@ -269,6 +296,7 @@ public class Bude {
 		}).start();
 	}
 
+
 	/**
 	 * 停止监听器
 	 */
@@ -276,11 +304,12 @@ public class Bude {
 		BudeSocket.close();
 	}
 
+
 	/**
 	 * 获取本地IP地址
 	 * @return
 	 */
 	public String getLoaclhost() {
-		return loaclhost;
+		return localhost;
 	}
 }

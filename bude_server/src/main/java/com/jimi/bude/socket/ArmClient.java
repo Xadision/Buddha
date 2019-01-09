@@ -6,6 +6,7 @@ import com.jimi.bude.service.SocketLogService;
 
 import cc.darhao.jiminal.socket.Jiminal;
 
+
 /**
  * 中转端Socket客户端
  * @type ArmClient
@@ -14,15 +15,18 @@ import cc.darhao.jiminal.socket.Jiminal;
  * @date 2018年10月8日
  */
 public class ArmClient {
+
 	private String armName;
 	private Jiminal jiminal;
 	private static SocketLogService socketLogService = SocketLogService.me;
-	private static short controllId = 0;
+	private static short controlId = 0;
+
 
 	public ArmClient(String armName, Jiminal jiminal) {
 		this.armName = armName;
 		this.jiminal = jiminal;
 	}
+
 
 	/**
 	 * 发送更新包
@@ -33,6 +37,7 @@ public class ArmClient {
 		socketLogService.add(p, UpdatePackage.class, Bude.me.getLoaclhost(), jiminal.getRemoteIp());
 	}
 
+
 	/**
 	 * 发送Ping包
 	 * @param p Ping包
@@ -42,6 +47,7 @@ public class ArmClient {
 		socketLogService.add(p, PingPackage.class, Bude.me.getLoaclhost(), jiminal.getRemoteIp());
 	}
 
+
 	/**
 	 * 停止关闭Socket
 	 */
@@ -49,17 +55,19 @@ public class ArmClient {
 		jiminal.close();
 	}
 
+
 	public String getArmName() {
 		return armName;
 	}
+
 
 	/**
 	 * 生成ControllId
 	 * @return
 	 */
 	public synchronized static Short genControllId() {
-		controllId %= 65536;
-		controllId++;
-		return controllId;
+		controlId %= 65536;
+		controlId++;
+		return controlId;
 	}
 }

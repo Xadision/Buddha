@@ -5,6 +5,7 @@ import com.jimi.bude.exception.ParameterException;
 import com.jimi.bude.service.ArmService;
 import com.jimi.bude.util.ResultUtil;
 
+
 /**
  * 中转端管理控制层
  * @type ArmController
@@ -13,7 +14,9 @@ import com.jimi.bude.util.ResultUtil;
  * @date 2018年9月3日
  */
 public class ArmController extends Controller {
+
 	private ArmService armService = ArmService.me;
+
 
 	/**
 	 * 添加中转端
@@ -28,6 +31,7 @@ public class ArmController extends Controller {
 		renderJson(result);
 	}
 
+
 	/**
 	 * 删除中转端
 	 * @param armName
@@ -39,6 +43,7 @@ public class ArmController extends Controller {
 		ResultUtil result = armService.delete(armName);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 移入移出中转组
@@ -52,6 +57,7 @@ public class ArmController extends Controller {
 		ResultUtil result = armService.editBody(armName, bodyId);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 查询中转端
@@ -69,6 +75,7 @@ public class ArmController extends Controller {
 		ResultUtil result = armService.select(armName, currentPage, pageSize);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 查询中转端下的设备端信息和设备端应用的软件包信息

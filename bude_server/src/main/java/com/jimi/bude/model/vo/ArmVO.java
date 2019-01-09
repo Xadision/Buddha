@@ -7,7 +7,9 @@ import java.util.List;
 
 import com.jfinal.plugin.activerecord.Record;
 
+
 public class ArmVO {
+
 	String armName;
 	String ip;
 	Integer serverPort;
@@ -15,53 +17,66 @@ public class ArmVO {
 	Integer bodyId;
 	Boolean status;
 
+
 	public String getArmName() {
 		return armName;
 	}
+
 
 	public void setArmName(String armName) {
 		this.armName = armName;
 	}
 
+
 	public String getIp() {
 		return ip;
 	}
+
 
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
 
+
 	public Integer getServerPort() {
 		return serverPort;
 	}
+
 
 	public void setServerPort(Integer serverPort) {
 		this.serverPort = serverPort;
 	}
 
+
 	public Date getLastPingTime() {
 		return lastPingTime;
 	}
+
 
 	public void setLastPingTime(Date lastPingTime) {
 		this.lastPingTime = lastPingTime;
 	}
 
+
 	public Integer getBodyId() {
 		return bodyId;
 	}
+
 
 	public void setBodyId(Integer bodyId) {
 		this.bodyId = bodyId;
 	}
 
+
 	public Boolean getStatus() {
 		return status;
 	}
 
+
 	public void setStatus(Boolean status) {
 		this.status = status;
 	}
+
 
 	public static List<ArmVO> fillList(List<Record> records) {
 		Calendar calendar = Calendar.getInstance();

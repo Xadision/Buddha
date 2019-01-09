@@ -4,6 +4,7 @@ import cc.darhao.jiminal.annotation.Parse;
 import cc.darhao.jiminal.annotation.Protocol;
 import cc.darhao.jiminal.pack.BasePackage;
 
+
 /**
  * 更新包
  * @type UpdatePackage
@@ -33,73 +34,91 @@ public class UpdatePackage extends BasePackage {
 	@Parse(value = {221, 16})
 	private String md5;
 
+
 	public int getControllId() {
 		return controllId;
 	}
+
 
 	public void setControllId(int controllId) {
 		this.controllId = controllId;
 	}
 
+
 	public String getFingerName() {
 		return fingerName;
 	}
+
 
 	public void setFingerName(String fingerName) {
 		this.fingerName = fingerName;
 	}
 
+
 	public String getHeadName() {
 		return headName;
 	}
+
 
 	public void setHeadName(String headName) {
 		this.headName = headName;
 	}
 
+
 	public String getFaceName() {
 		return faceName;
 	}
+
 
 	public void setFaceName(String faceName) {
 		this.faceName = faceName;
 	}
 
+
 	public int getFirstCode() {
 		return firstCode;
 	}
+
 
 	public void setFirstCode(int firstCode) {
 		this.firstCode = firstCode;
 	}
 
+
 	public int getSecondCode() {
 		return secondCode;
 	}
+
 
 	public void setSecondCode(int secondCode) {
 		this.secondCode = secondCode;
 	}
 
+
 	public int getDebugCode() {
 		return debugCode;
 	}
+
 
 	public void setDebugCode(int debugCode) {
 		this.debugCode = debugCode;
 	}
 
+
 	public String getSuffixTime() {
 		return suffixTime;
 	}
+
 
 	public void setSuffixTime(String suffixTime) {
 		this.suffixTime = suffixTime;
 	}
 
+
 	public String getMd5() {
 		return md5;
 	}
+
 
 	public void setMd5(String md5) {
 		this.md5 = md5;

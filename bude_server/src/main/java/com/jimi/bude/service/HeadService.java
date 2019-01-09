@@ -16,11 +16,18 @@ import com.jimi.bude.service.base.SelectService;
 import com.jimi.bude.util.CommonUtil;
 import com.jimi.bude.util.ResultUtil;
 
+
 public class HeadService extends SelectService {
+
 	private static SelectService selectService = Enhancer.enhance(SelectService.class);
-	public final static  HeadService me = new HeadService();
+	
+	public final static HeadService me = new HeadService();
+	
 	private final static String SELECT_EXISTENT_HEAD_SQL = "select * from head where name = ?";
+	
 	private final static String SELECT_FACE_BY_HEAD_SQL = "select * from face where face.head_id = ?";
+
+
 	public ResultUtil add(String headName) {
 		String result = "";
 		Head head = Head.dao.findFirst(SELECT_EXISTENT_HEAD_SQL, headName);
@@ -31,6 +38,7 @@ public class HeadService extends SelectService {
 		new Head().set("name", headName).save();
 		return ResultUtil.succeed();
 	}
+
 
 	public synchronized ResultUtil update(Integer headId, String headName) {
 		String result = "";
@@ -44,7 +52,7 @@ public class HeadService extends SelectService {
 			result = "head is not exist";
 			throw new OperationException(result);
 		}
-		List<Face> faces =  Face.dao.find(SELECT_FACE_BY_HEAD_SQL, headId);
+		List<Face> faces = Face.dao.find(SELECT_FACE_BY_HEAD_SQL, headId);
 		for (Face face : faces) {
 			File[] files = CommonUtil.findFaceFiles(CommonUtil.getFilePath("BEAD", head.getName(), face.getName()));
 			if (files != null && files.length > 0) {
@@ -62,15 +70,17 @@ public class HeadService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	public ResultUtil select(Integer currentPage, Integer pageSize) {
-		List<HeadVO> list = new ArrayList<>();
+		List<HeadVO> headVOs = new ArrayList<>();
 		Page<Record> pageRecord = new Page<>();
 		PageUtil<HeadVO> pageUtil = new PageUtil<>();
 		pageRecord = selectService.select("head", currentPage, pageSize, null, null, null, null);
-		list = HeadVO.fillList(pageRecord.getList());
-		pageUtil.fill(pageRecord, list);
+		headVOs = HeadVO.fillList(pageRecord.getList());
+		pageUtil.fill(pageRecord, headVOs);
 		return ResultUtil.succeed(pageUtil);
 	}
+
 
 	public ResultUtil delete(Integer headId) {
 		String result = "";

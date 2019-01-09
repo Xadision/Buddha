@@ -3,15 +3,34 @@ package com.jimi.bude.redis;
 import com.jfinal.plugin.redis.Cache;
 import com.jfinal.plugin.redis.Redis;
 import com.jfinal.plugin.redis.RedisPlugin;
-import com.jimi.bude.entity.ControllType;
+import com.jimi.bude.entity.ControlType;
 
-public class ControllRedisDao {
 
-	public static Cache controllCache = Redis.use("controll");
+/**
+ * redis操作
+ * @type ControlRedisDao
+ * @Company 几米物联技术有限公司-自动化部
+ * @author 汤如杰
+ * @date 2019年1月9日
+ */
+public class ControlRedisDao {
+
+	public static Cache controlCache = Redis.use("control");
+	
 	private static String UPDATE_SUFFIX = "_update";
+	
 	private static String RESTRAT_SUFFIX = "_restart";
 
-	public synchronized static boolean put(String armName, String fingerName, ControllType type, int status) {
+
+	/**
+	 * 添加控制包的唯一识别码及回复状态，识别码由中转端，设备端，控制包类型决定
+	 * @param armName
+	 * @param fingerName
+	 * @param type
+	 * @param status
+	 * @return
+	 */
+	public synchronized static boolean put(String armName, String fingerName, ControlType type, int status) {
 		String key = armName + "_" + fingerName;
 		switch (type) {
 		case UPDATE:
@@ -24,7 +43,7 @@ public class ControllRedisDao {
 			break;
 		}
 		try {
-			controllCache.set(key, status);
+			controlCache.set(key, status);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return false;
@@ -32,7 +51,15 @@ public class ControllRedisDao {
 		return true;
 	}
 
-	public synchronized static Integer get(String armName, String fingerName, ControllType type) {
+
+	/**
+	 * 获取控制包回复状态
+	 * @param armName
+	 * @param fingerName
+	 * @param type
+	 * @return
+	 */
+	public synchronized static Integer get(String armName, String fingerName, ControlType type) {
 		String key = armName + "_" + fingerName;
 		switch (type) {
 		case UPDATE:
@@ -46,7 +73,7 @@ public class ControllRedisDao {
 		}
 		Integer value = null;
 		try {
-			value = controllCache.get(key);
+			value = controlCache.get(key);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -54,7 +81,14 @@ public class ControllRedisDao {
 		return value;
 	}
 
-	public synchronized static void del(String armName, String fingerName, ControllType type) {
+
+	/**
+	 * 删除
+	 * @param armName
+	 * @param fingerName
+	 * @param type
+	 */
+	public synchronized static void del(String armName, String fingerName, ControlType type) {
 		String key = armName + "_" + fingerName;
 		switch (type) {
 		case UPDATE:
@@ -66,10 +100,18 @@ public class ControllRedisDao {
 		default:
 			break;
 		}
-		controllCache.del(key);
+		controlCache.del(key);
 	}
 
-	public synchronized static boolean isExist(String armName, String fingerName, ControllType type) {
+
+	/**
+	 * 判断是否存在
+	 * @param armName
+	 * @param fingerName
+	 * @param type
+	 * @return
+	 */
+	public synchronized static boolean isExist(String armName, String fingerName, ControlType type) {
 		String key = armName + "_" + fingerName;
 		switch (type) {
 		case UPDATE:
@@ -83,7 +125,7 @@ public class ControllRedisDao {
 		}
 		boolean flag = false;
 		try {
-			flag = controllCache.exists(key);
+			flag = controlCache.exists(key);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -91,22 +133,27 @@ public class ControllRedisDao {
 
 	}
 
+
+	/**
+	 * 清空
+	 */
 	public synchronized static void clear() {
 		try {
-			controllCache.flushAll();
+			controlCache.flushAll();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
 
+
 	public static void main(String[] args) {
-		RedisPlugin rp = new RedisPlugin("controll", "localhost", "newttl1234!@#$");
+		RedisPlugin rp = new RedisPlugin("control", "localhost", "newttl1234!@#$");
 		// 与web下唯一区别是需要这里调用一次start()方法
 		rp.start();
-		controllCache = Redis.use("controll");
-		ControllRedisDao.put("AAA", "String", ControllType.UPDATE, 20);
-		Integer b = ControllRedisDao.get("CCC", "String", ControllType.UPDATE);
+		controlCache = Redis.use("control");
+		ControlRedisDao.put("AAA", "String", ControlType.UPDATE, 20);
+		Integer b = ControlRedisDao.get("CCC", "String", ControlType.UPDATE);
 		/*
 		 * if (b == null) { System.out.println("c"); }
 		 */

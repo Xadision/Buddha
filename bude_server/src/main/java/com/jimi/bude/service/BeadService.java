@@ -27,6 +27,7 @@ import com.jimi.bude.service.base.SelectService;
 import com.jimi.bude.util.CommonUtil;
 import com.jimi.bude.util.ResultUtil;
 
+
 /**
  * 软件包管理业务层
  * @type BeadService
@@ -37,16 +38,27 @@ import com.jimi.bude.util.ResultUtil;
 public class BeadService extends SelectService {
 
 	private static SelectService selectService = Enhancer.enhance(SelectService.class);
-	private final static String SELECT_EXISTENT_HEAD_SQL = "select * from head where name = ?";
-	private final static String SELECT_EXISTENT_BEAD_SQL = "select * from bead where face_id = ? and first_code = ? and second_code = ? and debug_code = ? and suffix_time = ?";
-	private final static String BASE_SELECT_BEAD_SQL = "select ";
-	private final static String FROM_BEAD_SQL = " from bead";
-	private final static String BASE_WHERE_CLAUSE = " where face_id = ?";
-	private final static String AND_FIRST_CODE = " and first_code = ?";
-	private final static String AND_SECOND_CODE = " and second_code = ?";
-	private final static String AND_DEBUG_CODE = " and debug_code = ?";
-	private final static String SELECT_BEAD_BY_ID = "select bead.*, face.name as face_name, head.name as head_name from bead inner join face inner join head on (bead.face_id = face.id and face.head_id = head.id) where bead.id = ?";
+	
 	public static final BeadService me = new BeadService();
+	
+	private final static String SELECT_EXISTENT_HEAD_SQL = "select * from head where name = ?";
+	
+	private final static String SELECT_EXISTENT_BEAD_SQL = "select * from bead where face_id = ? and first_code = ? and second_code = ? and debug_code = ? and suffix_time = ?";
+	
+	private final static String BASE_SELECT_BEAD_SQL = "select ";
+	
+	private final static String FROM_BEAD_SQL = " from bead";
+	
+	private final static String BASE_WHERE_CLAUSE = " where face_id = ?";
+	
+	private final static String AND_FIRST_CODE = " and first_code = ?";
+	
+	private final static String AND_SECOND_CODE = " and second_code = ?";
+	
+	private final static String AND_DEBUG_CODE = " and debug_code = ?";
+	
+	private final static String SELECT_BEAD_BY_ID = "select bead.*, face.name as face_name, head.name as head_name from bead inner join face inner join head on (bead.face_id = face.id and face.head_id = head.id) where bead.id = ?";
+
 
 	/**
 	 * 上传文件
@@ -103,6 +115,7 @@ public class BeadService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	/**
 	 * 更新软件包信息
 	 * @param beadId
@@ -122,6 +135,7 @@ public class BeadService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	/**
 	 * 查询软件包信息
 	 * @param faceId
@@ -131,7 +145,7 @@ public class BeadService extends SelectService {
 	 * @return
 	 */
 	public ResultUtil select(Integer faceId, Integer firstCode, Integer secondCode, Integer debugCode, String suffixTime, Integer currentPage, Integer pageSize) {
-		List<BeadVO> list = new ArrayList<>();
+		List<BeadVO> beadVOs = new ArrayList<>();
 		Page<Record> pageRecord = new Page<>();
 		StringBuilder filter = new StringBuilder();
 		PageUtil<BeadVO> pageUtil = new PageUtil<>();
@@ -163,10 +177,11 @@ public class BeadService extends SelectService {
 			filter.append("suffix_time = " + suffixTime);
 		}
 		pageRecord = selectService.select("bead", currentPage, pageSize, null, null, filter.toString(), null);
-		list = BeadVO.fillList(pageRecord.getList());
-		pageUtil.fill(pageRecord, list);
+		beadVOs = BeadVO.fillList(pageRecord.getList());
+		pageUtil.fill(pageRecord, beadVOs);
 		return ResultUtil.succeed(pageUtil);
 	}
+
 
 	/**
 	 * 查询主版本
@@ -179,6 +194,7 @@ public class BeadService extends SelectService {
 
 	}
 
+
 	/**
 	 * 查询次版本
 	 * @param faceId
@@ -189,6 +205,7 @@ public class BeadService extends SelectService {
 		List<Bead> beads = Bead.dao.find(BASE_SELECT_BEAD_SQL + "distinct second_code as secondCode" + FROM_BEAD_SQL + BASE_WHERE_CLAUSE + AND_FIRST_CODE, faceId, firstCode);
 		return ResultUtil.succeed(beads);
 	}
+
 
 	/**
 	 * 查询修正版本
@@ -202,6 +219,7 @@ public class BeadService extends SelectService {
 		return ResultUtil.succeed(beads);
 	}
 
+
 	/**
 	 * 查询时间后缀
 	 * @param faceId
@@ -214,6 +232,7 @@ public class BeadService extends SelectService {
 		List<Bead> beads = Bead.dao.find(BASE_SELECT_BEAD_SQL + "distinct suffix_time as suffixTime" + FROM_BEAD_SQL + BASE_WHERE_CLAUSE + AND_FIRST_CODE + AND_SECOND_CODE + AND_DEBUG_CODE, faceId, firstCode, secondCode, debugCode);
 		return ResultUtil.succeed(beads);
 	}
+
 
 	/**
 	 * 删除软件包
@@ -256,10 +275,12 @@ public class BeadService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	public Bead selectById(Integer beadId) {
 		Bead bead = Bead.dao.findFirst(SELECT_BEAD_BY_ID, beadId);
 		return bead;
 	}
+
 
 	/**
 	 * 计算文件MD5
@@ -291,6 +312,7 @@ public class BeadService extends SelectService {
 		}
 
 	}
+
 
 	/**
 	 * 测试方法

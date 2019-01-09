@@ -20,9 +20,11 @@ import com.jimi.bude.model.User;
 import com.jimi.bude.service.ActionLogService;
 import com.jimi.bude.util.TokenBox;
 
+
 public class ActionLogInterceptor implements Interceptor {
 
 	private ActionLogService actionLogService = ActionLogService.me;
+
 
 	@Override
 	public void intercept(Invocation inv) {

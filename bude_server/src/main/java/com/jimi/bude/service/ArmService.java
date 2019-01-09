@@ -15,6 +15,7 @@ import com.jimi.bude.model.vo.PageUtil;
 import com.jimi.bude.service.base.SelectService;
 import com.jimi.bude.util.ResultUtil;
 
+
 /**
  * 中转端管理业务逻辑层
  * 
@@ -24,8 +25,11 @@ import com.jimi.bude.util.ResultUtil;
  * @date 2018年9月3日
  */
 public class ArmService extends SelectService {
+
 	private static SelectService selectService = Enhancer.enhance(SelectService.class);
-	public static final ArmService me = new ArmService();
+	
+	public final static ArmService me = new ArmService();
+
 
 	/**
 	 * 添加中转端
@@ -47,6 +51,7 @@ public class ArmService extends SelectService {
 		arm.save();
 		return ResultUtil.succeed();
 	}
+
 
 	/**
 	 * 删除中转端
@@ -70,6 +75,7 @@ public class ArmService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	/**
 	 * 查询中转端
 	 * 
@@ -81,16 +87,17 @@ public class ArmService extends SelectService {
 	public ResultUtil select(String armName, Integer currentPage, Integer pageSize) {
 		Page<Record> pageRecord = new Page<>();
 		PageUtil<ArmVO> pageUtil = new PageUtil<>();
-		List<ArmVO> list = new ArrayList<ArmVO>();
+		List<ArmVO> armVOs = new ArrayList<ArmVO>();
 		String filter = null;
 		if (armName != null) {
 			filter = "name = " + armName;
 		}
 		pageRecord = selectService.select("arm", currentPage, pageSize, null, null, filter, null);
-		list = ArmVO.fillList(pageRecord.getList());
-		pageUtil.fill(pageRecord, list);
+		armVOs = ArmVO.fillList(pageRecord.getList());
+		pageUtil.fill(pageRecord, armVOs);
 		return ResultUtil.succeed(pageUtil);
 	}
+
 
 	/**
 	 * 查询中转端下设备端信息
@@ -103,16 +110,17 @@ public class ArmService extends SelectService {
 	public ResultUtil selectFinger(String armName, Integer currentPage, Integer pageSize) {
 		Page<Record> pageRecord = new Page<>();
 		PageUtil<FingerAndBeadVO> pageUtil = new PageUtil<>();
-		List<FingerAndBeadVO> list = new ArrayList<FingerAndBeadVO>();
+		List<FingerAndBeadVO> fingerAndBeadVOs = new ArrayList<FingerAndBeadVO>();
 		String filter = "arm_name = " + armName;
 		String[] tables = {"finger", "bead", "face", "head"};
 		String[] refers = {"finger.bead_id = bead.id", "bead.face_id = face.id", "face.head_id = head.id"};
-		String[] discard = {"face.id", "head.id", "face.head_id"};
-		pageRecord = selectService.select(tables, refers, currentPage, pageSize, null, null, filter, discard);
-		list = FingerAndBeadVO.fillList(pageRecord.getList());
-		pageUtil.fill(pageRecord, list);
+		String[] discards = {"face.id", "head.id", "face.head_id"};
+		pageRecord = selectService.select(tables, refers, currentPage, pageSize, null, null, filter, discards);
+		fingerAndBeadVOs = FingerAndBeadVO.fillList(pageRecord.getList());
+		pageUtil.fill(pageRecord, fingerAndBeadVOs);
 		return ResultUtil.succeed(pageUtil);
 	}
+
 
 	/**
 	 * 移入中转组
@@ -141,6 +149,7 @@ public class ArmService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	/**
 	 * 移出中转组
 	 * 
@@ -162,6 +171,7 @@ public class ArmService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	/**
 	 * 查询中转端(供Socket调用)
 	 * 
@@ -172,6 +182,7 @@ public class ArmService extends SelectService {
 		Arm arm = Arm.dao.findById(armName);
 		return arm;
 	}
+
 
 	/**
 	 * 更新中转端(供Socket调用)

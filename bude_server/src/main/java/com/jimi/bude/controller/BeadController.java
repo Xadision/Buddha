@@ -12,6 +12,7 @@ import com.jimi.bude.service.BeadService;
 import com.jimi.bude.util.CommonUtil;
 import com.jimi.bude.util.ResultUtil;
 
+
 /**
  * 软件包管理控制层
  * @type BeadController
@@ -21,8 +22,22 @@ import com.jimi.bude.util.ResultUtil;
  */
 public class BeadController extends Controller {
 
-	BeadService beadService = BeadService.me;
+	private final static Integer SUFFIXTIME_LENGTH = 12;
+	
+	private final static Integer MD5_LENGTH = 32;
+	
+	private final static Integer YEAR_INDEX = 4;
+	
+	private final static Integer MONTH_INDEX = 6;
+	
+	private final static Integer DAY_INDEX = 8;
+	
+	private final static Integer HOUR_INDEX = 10;
+	
+	private final  static Integer MINUTE_INDEX = 12;
+	private BeadService beadService = BeadService.me;
 
+	
 	/**
 	 * 上传文件
 	 * @param file 文件
@@ -55,7 +70,7 @@ public class BeadController extends Controller {
 				secondCode = Integer.valueOf(version[1]);
 				debugCode = Integer.valueOf(version[2]);
 				suffixTime = array[2].split("\\.")[0];
-				if (suffixTime.length() != 12 || !checkSuffixTime(suffixTime)) {
+				if (suffixTime.length() != SUFFIXTIME_LENGTH || !checkSuffixTime(suffixTime)) {
 					throw new ParameterException("fileName is not in the right format");
 				}
 			} catch (Exception e) {
@@ -64,7 +79,7 @@ public class BeadController extends Controller {
 			if (alias == null || updateDescribe == null || md5 == null) {
 				throw new ParameterException("Parameters can not be null");
 			}
-			if (md5.trim().equals("") || md5.length() != 32) {
+			if (md5.trim().equals("") || md5.length() != MD5_LENGTH) {
 				throw new ParameterException("md5 is not in the right format");
 			}
 			ResultUtil result = beadService.upload(file.getFile(), fileName, headName, faceName, firstCode, secondCode, debugCode, suffixTime, alias, updateDescribe, md5);
@@ -76,6 +91,7 @@ public class BeadController extends Controller {
 		}
 
 	}
+
 
 	/**
 	 * 下载软件包
@@ -103,6 +119,7 @@ public class BeadController extends Controller {
 		renderFile(file);
 	}
 
+
 	/**
 	 * 更新软件包信息
 	 * @param beadId
@@ -117,6 +134,7 @@ public class BeadController extends Controller {
 		renderJson(result);
 	}
 
+
 	/**
 	 * 查询主版本号
 	 * @param faceId 模块ID
@@ -128,6 +146,7 @@ public class BeadController extends Controller {
 		ResultUtil result = beadService.selectFirstCode(faceId);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 查询次版本号
@@ -141,6 +160,7 @@ public class BeadController extends Controller {
 		ResultUtil result = beadService.selectSecondCode(faceId, firstCode);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 查询修正版本号
@@ -156,6 +176,7 @@ public class BeadController extends Controller {
 		renderJson(result);
 	}
 
+
 	/**
 	 * 查询后缀时间
 	 * @param faceId 模块ID
@@ -170,6 +191,7 @@ public class BeadController extends Controller {
 		ResultUtil result = beadService.selectSuffixTime(faceId, firstCode, secondCode, debugCode);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 查询软件包信息
@@ -192,6 +214,7 @@ public class BeadController extends Controller {
 		renderJson(result);
 	}
 
+
 	/**
 	 * 删除软件包
 	 * @param beadId
@@ -204,12 +227,13 @@ public class BeadController extends Controller {
 		renderJson(result);
 	}
 
-	public boolean checkSuffixTime(String suffixTime) {
-		String year = suffixTime.substring(0, 4);
-		String month = suffixTime.substring(4, 6);
-		String day = suffixTime.substring(6, 8);
-		String hour = suffixTime.substring(8, 10);
-		String minute = suffixTime.substring(10, 12);
+
+	private boolean checkSuffixTime(String suffixTime) {
+		String year = suffixTime.substring(0, YEAR_INDEX);
+		String month = suffixTime.substring(YEAR_INDEX, DAY_INDEX);
+		String day = suffixTime.substring(DAY_INDEX, HOUR_INDEX);
+		String hour = suffixTime.substring(HOUR_INDEX, MINUTE_INDEX);
+		String minute = suffixTime.substring(MINUTE_INDEX, SUFFIXTIME_LENGTH);
 		String time = year + "-" + month + "-" + day + " " + hour + ":" + minute + ":00";
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		try {

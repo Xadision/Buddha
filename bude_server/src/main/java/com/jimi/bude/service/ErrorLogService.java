@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.jimi.bude.model.ErrorLog;
 
+
 /**
  * 错误日志业务逻辑层
  * @type ErrorLogService
@@ -12,7 +13,9 @@ import com.jimi.bude.model.ErrorLog;
  * @date 2018年10月8日
  */
 public class ErrorLogService {
+
 	public static ErrorLogService me = new ErrorLogService();
+
 
 	/**
 	 * 添加错误日志

@@ -12,6 +12,7 @@ import com.jimi.bude.util.TokenBox;
 
 import cc.darhao.dautils.api.MD5Util;
 
+
 /**
  * 用户管理控制层
  * @type UserController
@@ -23,6 +24,7 @@ public class UserController extends Controller {
 
 	private UserService userService = Enhancer.enhance(UserService.class);
 	public static final String SESSION_KEY_LOGIN_USER = "loginUser";
+
 
 	/**
 	 * 添加用户
@@ -37,6 +39,7 @@ public class UserController extends Controller {
 		renderJson(result);
 	}
 
+
 	/**
 	 * 删除用户
 	 * @param id
@@ -48,6 +51,7 @@ public class UserController extends Controller {
 		ResultUtil result = userService.delete(id);
 		renderJson(result);
 	}
+
 
 	/**
 	 * 登录
@@ -81,6 +85,7 @@ public class UserController extends Controller {
 
 	}
 
+
 	/**
 	 * 登出
 	 */
@@ -88,7 +93,7 @@ public class UserController extends Controller {
 		String tokenId = getPara(TokenBox.TOKEN_ID_KEY_NAME);
 		User user = TokenBox.get(tokenId, SESSION_KEY_LOGIN_USER);
 		if (user == null) {
-			throw new OperationException("password is wrong");
+			throw new OperationException("no user login");
 		}
 		TokenBox.remove(tokenId);
 		renderJson(ResultUtil.succeed());

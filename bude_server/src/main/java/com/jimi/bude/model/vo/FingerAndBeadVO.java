@@ -6,8 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.jfinal.plugin.activerecord.Record;
-import com.jimi.bude.entity.ControllType;
-import com.jimi.bude.redis.ControllRedisDao;
+import com.jimi.bude.entity.ControlType;
+import com.jimi.bude.redis.ControlRedisDao;
+
 
 public class FingerAndBeadVO {
 
@@ -22,85 +23,106 @@ public class FingerAndBeadVO {
 	private Boolean status;
 	private String update;
 
+
 	public String getName() {
 		return name;
 	}
+
 
 	public void setName(String name) {
 		this.name = name;
 	}
 
+
 	public String getArmName() {
 		return armName;
 	}
+
 
 	public void setArmName(String armName) {
 		this.armName = armName;
 	}
 
+
 	public String getIp() {
 		return ip;
 	}
+
 
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
 
+
 	public Date getLastPingTime() {
 		return lastPingTime;
 	}
+
 
 	public void setLastPingTime(Date lastPingTime) {
 		this.lastPingTime = lastPingTime;
 	}
 
+
 	public Integer getBeadId() {
 		return beadId;
 	}
+
 
 	public void setBeadId(Integer beadId) {
 		this.beadId = beadId;
 	}
 
+
 	public BeadVO getBead() {
 		return bead;
 	}
+
 
 	public void setBead(BeadVO bead) {
 		this.bead = bead;
 	}
 
+
 	public String getFaceName() {
 		return faceName;
 	}
+
 
 	public void setFaceName(String faceName) {
 		this.faceName = faceName;
 	}
 
+
 	public String getHeadName() {
 		return headName;
 	}
+
 
 	public void setHeadName(String headName) {
 		this.headName = headName;
 	}
 
+
 	public Boolean getStatus() {
 		return status;
 	}
+
 
 	public void setStatus(Boolean status) {
 		this.status = status;
 	}
 
+
 	public String getUpdate() {
 		return update;
 	}
 
+
 	public void setUpdate(String update) {
 		this.update = update;
 	}
+
 
 	public static List<FingerAndBeadVO> fillList(List<Record> records) {
 		Calendar calendar = Calendar.getInstance();
@@ -131,7 +153,7 @@ public class FingerAndBeadVO {
 				} else {
 					fingerAndBeadVO.setStatus(false);
 				}
-				Integer updateNo = ControllRedisDao.get(record.getStr("Finger_ArmName"), record.getStr("Finger_Name"), ControllType.UPDATE);
+				Integer updateNo = ControlRedisDao.get(record.getStr("Finger_ArmName"), record.getStr("Finger_Name"), ControlType.UPDATE);
 				if (updateNo != null) {
 					switch (updateNo) {
 					case 20:

@@ -8,6 +8,7 @@ import com.jfinal.kit.PathKit;
 
 import cc.darhao.dautils.api.StringUtil;
 
+
 public class CommonUtil {
 
 	/**
@@ -31,6 +32,7 @@ public class CommonUtil {
 
 	}
 
+
 	/**
 	 * 拼接文件名，无后缀
 	 * @param headName
@@ -45,6 +47,7 @@ public class CommonUtil {
 		String name = headName + "-" + faceName + "_" + firstCode + "." + secondCode + "." + debugCode + "_" + suffixTime;
 		return name;
 	}
+
 
 	/**
 	 * 根据路径和文件名(无文件后缀)查找文件，只返回一个文件
@@ -72,21 +75,22 @@ public class CommonUtil {
 		return tempFile[0];
 	}
 
+
 	/**
 	 * 查询模块下所有文件
 	 * @param filePath 模块路径
 	 * @return
 	 */
-	public static File[] findFaceFiles(String filePath){
-		File dir= new File(filePath);
+	public static File[] findFaceFiles(String filePath) {
+		File dir = new File(filePath);
 		File[] tempFile = dir.listFiles();
 		if (tempFile == null || tempFile.length <= 0) {
 			return null;
 		}
 		return tempFile;
 	}
-	
-	
+
+
 	/**
 	 * 将字节列表直观转成某进制的无符号字符串
 	 * @param bytes
@@ -118,17 +122,20 @@ public class CommonUtil {
 		return sb.toString().trim();
 	}
 
+
 	public static boolean rename(String path, String oldName, String newName) {
-		if(!oldName.equals(newName)){
-            File oldFile=new File(path+oldName);
-            File newFile=new File(path+newName);
-            if(newFile.exists()){
-                return false;
-            }
-            oldFile.renameTo(newFile);
-        }
+		if (!oldName.equals(newName)) {
+			File oldFile = new File(path + oldName);
+			File newFile = new File(path + newName);
+			if (newFile.exists()) {
+				return false;
+			}
+			oldFile.renameTo(newFile);
+		}
 		return true;
 	}
+
+
 	public static void main(String[] args) {
 		/*
 		 * System.out.println(getFilePath("BEAD", "SMT", "Display"));

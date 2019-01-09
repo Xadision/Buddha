@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import cc.darhao.dautils.api.MD5Util;
 
+
 /**
  * 用于保存会话信息，通过tokenId进行信息存取，自带超时检测线程
  */
@@ -24,6 +25,7 @@ public class TokenBox {
 	private static Map<String, Map<String, Object>> sessions;
 	// 超时检查线程
 	private static Thread timeoutThread;
+
 
 	/**
 	 * 开启tokenBox，设置超时时间，单位：小时，设置为0表示永不超时
@@ -58,6 +60,7 @@ public class TokenBox {
 		System.out.println("TokenBox is Running Now...");
 	}
 
+
 	/**
 	 * 停止tokenBox
 	 */
@@ -67,6 +70,7 @@ public class TokenBox {
 		}
 		System.out.println("TokenBox was Stopped.");
 	}
+
 
 	/**
 	 * 根据tokenId和key，设置值，如果id不存在，则会创建一个和id绑定的session再设置值
@@ -82,6 +86,7 @@ public class TokenBox {
 		session.put(key, value);
 	}
 
+
 	/**
 	 * 根据tokenId和key获取值
 	 */
@@ -96,6 +101,7 @@ public class TokenBox {
 		return (T) session.get(key);
 	}
 
+
 	/**
 	 * 移除一个session
 	 */
@@ -105,6 +111,7 @@ public class TokenBox {
 		}
 	}
 
+
 	/**
 	 * 创建一个随机的32位TokenId
 	 */
@@ -112,12 +119,14 @@ public class TokenBox {
 		return MD5Util.MD5(new Date().getTime() + "Darhao");
 	}
 
+
 	/**
 	 * 刷新最后一次访问时间
 	 */
 	private static void refreshLastAccessTime(Map<String, Object> session) {
 		session.put(LAST_ACCESS_TIME_KEY_NAME, new Date().getTime());
 	}
+
 
 	/**
 	 * 单元测试

@@ -26,6 +26,7 @@ import com.jimi.bude.controller.FaceController;
 import com.jimi.bude.controller.FingerController;
 import com.jimi.bude.controller.HeadController;
 import com.jimi.bude.controller.UserController;
+import com.jimi.bude.interceptor.AccessInterceptor;
 import com.jimi.bude.interceptor.ActionLogInterceptor;
 import com.jimi.bude.interceptor.CORSInterceptor;
 import com.jimi.bude.interceptor.ErrorLogInterceptor;
@@ -35,7 +36,9 @@ import com.jimi.bude.socket.Bude;
 import com.jimi.bude.timer.PingTimer;
 import com.jimi.bude.util.TokenBox;
 
+
 public class MainConfig extends JFinalConfig {
+
 	/**
 	 * 配置JFinal常量
 	 */
@@ -59,6 +62,7 @@ public class MainConfig extends JFinalConfig {
 
 	}
 
+
 	/**
 	 * 配置JFinal路由映射
 	 */
@@ -72,6 +76,7 @@ public class MainConfig extends JFinalConfig {
 		me.add("/face", FaceController.class);
 		me.add("/head", HeadController.class);
 	}
+
 
 	/**
 	 * 配置JFinal插件
@@ -88,7 +93,7 @@ public class MainConfig extends JFinalConfig {
 		ActiveRecordPlugin arp = new ActiveRecordPlugin(dbPlugin);
 		arp.setShowSql(PropKit.getBoolean("devMode"));
 		arp.setDialect(new MysqlDialect());
-		RedisPlugin controllRedis = new RedisPlugin(PropKit.get("redisName"), PropKit.get("redisIp"), PropKit.get("redisPassword"));
+		RedisPlugin controlRedis = new RedisPlugin(PropKit.get("redisName"), PropKit.get("redisIp"), PropKit.get("redisPassword"));
 		/********在此添加数据库 表-Model 映射*********/
 		// 如果使用了JFinal Model 生成器 生成了BaseModel 把下面注释解开即可
 		_MappingKit.mapping(arp);
@@ -96,8 +101,9 @@ public class MainConfig extends JFinalConfig {
 		// 添加到插件列表中
 		me.add(dbPlugin);
 		me.add(arp);
-		me.add(controllRedis);
+		me.add(controlRedis);
 	}
+
 
 	/**
 	 * 配置全局拦截器
@@ -108,9 +114,10 @@ public class MainConfig extends JFinalConfig {
 		me.addGlobalActionInterceptor(new SessionInViewInterceptor());
 		me.addGlobalActionInterceptor(new ActionLogInterceptor());
 		me.addGlobalActionInterceptor(new ErrorLogInterceptor());
-		// me.addGlobalActionInterceptor(new AccessInterceptor());
+		me.addGlobalActionInterceptor(new AccessInterceptor());
 		me.addGlobalServiceInterceptor(new Tx());
 	}
+
 
 	/**
 	 * 配置全局处理器
@@ -118,6 +125,7 @@ public class MainConfig extends JFinalConfig {
 	@Override
 	public void configHandler(Handlers me) {
 	}
+
 
 	/**
 	 * JFinal启动后调用
@@ -137,6 +145,7 @@ public class MainConfig extends JFinalConfig {
 		System.out.println("Bude Server is running");
 	}
 
+
 	/**
 	 * JFinal Stop之前调用 
 	 */
@@ -151,6 +160,7 @@ public class MainConfig extends JFinalConfig {
 
 	}
 
+
 	/**
 	 * 配置模板引擎 
 	 */
@@ -160,6 +170,7 @@ public class MainConfig extends JFinalConfig {
 		// 配置共享函数模板
 		// me.addSharedFunction("/view/common/layout.html")
 	}
+
 
 	public static void main(String[] args) {
 		JFinal.start("src/main/webapp", 80, "/", 5);

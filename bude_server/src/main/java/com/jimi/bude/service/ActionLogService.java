@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.jimi.bude.model.ActionLog;
 
+
 /**
  * 接口调用日志业务逻辑层
  * @type ActionLogService
@@ -13,7 +14,8 @@ import com.jimi.bude.model.ActionLog;
  */
 public class ActionLogService {
 
-	public static ActionLogService me = new ActionLogService();
+	public final static ActionLogService me = new ActionLogService();
+
 
 	/**
 	 * 添加接口调用日志

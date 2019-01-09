@@ -5,7 +5,9 @@ import java.util.List;
 
 import com.jfinal.plugin.activerecord.Record;
 
+
 public class BeadDetailsVO {
+
 	private Integer id;
 	private Integer faceId;
 	private String alias;
@@ -15,62 +17,99 @@ public class BeadDetailsVO {
 	private Integer debugCode;
 	private String suffixTime;
 	private String updateDescribe;
+
+
 	public Integer getId() {
 		return id;
 	}
+
+
 	public void setId(Integer id) {
 		this.id = id;
 	}
+
+
 	public Integer getFaceId() {
 		return faceId;
 	}
+
+
 	public void setFaceId(Integer faceId) {
 		this.faceId = faceId;
 	}
+
+
 	public String getAlias() {
 		return alias;
 	}
+
+
 	public void setAlias(String alias) {
 		this.alias = alias;
 	}
+
+
 	public String getMd5() {
 		return md5;
 	}
+
+
 	public void setMd5(String md5) {
 		this.md5 = md5;
 	}
+
+
 	public Integer getFirstCode() {
 		return firstCode;
 	}
+
+
 	public void setFirstCode(Integer firstCode) {
 		this.firstCode = firstCode;
 	}
+
+
 	public Integer getSecondCode() {
 		return secondCode;
 	}
+
+
 	public void setSecondCode(Integer secondCode) {
 		this.secondCode = secondCode;
 	}
+
+
 	public Integer getDebugCode() {
 		return debugCode;
 	}
+
+
 	public void setDebugCode(Integer debugCode) {
 		this.debugCode = debugCode;
 	}
+
+
 	public String getSuffixTime() {
 		return suffixTime;
 	}
+
+
 	public void setSuffixTime(String suffixTime) {
 		this.suffixTime = suffixTime;
 	}
+
+
 	public String getUpdateDescribe() {
 		return updateDescribe;
 	}
+
+
 	public void setUpdateDescribe(String updateDescribe) {
 		this.updateDescribe = updateDescribe;
 	}
-	
-	public static List<BeadDetailsVO> fillList(List<Record> records){
+
+
+	public static List<BeadDetailsVO> fillList(List<Record> records) {
 		List<BeadDetailsVO> list = new ArrayList<BeadDetailsVO>();
 		for (Record record : records) {
 			BeadDetailsVO bead = new BeadDetailsVO();

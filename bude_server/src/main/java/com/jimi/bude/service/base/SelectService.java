@@ -17,6 +17,7 @@ import com.jimi.bude.model._MappingKit;
 
 import cc.darhao.dautils.api.StringUtil;
 
+
 /**
  * 通用查询业务层
  * <br>
@@ -41,6 +42,7 @@ public class SelectService {
 		System.out.println(result);
 	}
 
+
 	/**
 	 * 分页查询，支持筛选和排序
 	 * @param tables 提供可读的表名数组
@@ -62,6 +64,7 @@ public class SelectService {
 		return paginateAndFillWhereValues(tables, pageNo, pageSize, sql, questionValues, discard);
 	}
 
+
 	/**
 	 * 分页查询，支持筛选和排序
 	 * @param table 提供可读的表名
@@ -75,6 +78,7 @@ public class SelectService {
 	public Page<Record> select(String table, Integer pageNo, Integer pageSize, String ascBy, String descBy, String filter, String[] discard) {
 		return select(new String[] {table}, null, pageNo, pageSize, ascBy, descBy, filter, discard);
 	}
+
 
 	private void createFrom(String[] tables, String[] refers, StringBuffer sql) {
 		// 表名非空判断
@@ -110,6 +114,7 @@ public class SelectService {
 		}
 	}
 
+
 	private void createWhere(String filter, List<String> questionValues, StringBuffer sql) {
 		// 判断filter存在与否
 		if (filter != null) {
@@ -141,6 +146,7 @@ public class SelectService {
 		}
 	}
 
+
 	private void createOrderBy(String ascBy, String descBy, StringBuffer sql) {
 		if (ascBy != null && descBy != null) {
 			throw new ParameterException("ascBy and descBy can not be provided at the same time");
@@ -150,6 +156,7 @@ public class SelectService {
 			sql.append(" ORDER BY " + descBy + " DESC ");
 		}
 	}
+
 
 	private Page<Record> paginateAndFillWhereValues(String[] tables, Integer pageNo, Integer pageSize, StringBuffer sql, List<String> questionValues, String[] discard) {
 		if ((pageNo != null && pageSize == null) || (pageNo == null && pageSize != null)) {
@@ -162,6 +169,7 @@ public class SelectService {
 			return Db.paginate(pageNo, pageSize, resultSet, sql.toString(), questionValues.toArray());
 		}
 	}
+
 
 	private String createResultSet(String[] tables, String[] discards) {
 		/*

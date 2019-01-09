@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 import com.jfinal.aop.Enhancer;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
-import com.jimi.bude.entity.ControllType;
-import com.jimi.bude.entity.Infomation;
+import com.jimi.bude.entity.ControlType;
+import com.jimi.bude.entity.Information;
 import com.jimi.bude.exception.OperationException;
 import com.jimi.bude.model.Bead;
 import com.jimi.bude.model.Face;
@@ -27,6 +27,7 @@ import com.jimi.bude.util.ResultUtil;
 
 import cc.darhao.dautils.api.StringUtil;
 
+
 /**
  * 模块业务逻辑层
  * @type FaceService
@@ -37,10 +38,15 @@ import cc.darhao.dautils.api.StringUtil;
 public class FaceService extends SelectService {
 
 	public final static String SELECT_EXISTENT_FACE_SQL = "select * from face where head_id = ? and name = ?";
+	
 	public final static String SELECT_FACE_BY_HEAD_SQL = "select * from face where head_id = ?";
+	
 	public final static String SELECT_BEAD_BY_FACE = "select * from bead where face_id = ?";
-	private static SelectService selectService = Enhancer.enhance(SelectService.class);
+	
 	public final static FaceService me = new FaceService();
+	
+	private static SelectService selectService = Enhancer.enhance(SelectService.class);
+
 
 	/**
 	 * 添加模块
@@ -66,6 +72,7 @@ public class FaceService extends SelectService {
 		face.save();
 		return ResultUtil.succeed();
 	}
+
 
 	/**
 	 * 更新模块信息
@@ -95,7 +102,7 @@ public class FaceService extends SelectService {
 		if (files != null && files.length > 0) {
 			for (File file : files) {
 				String fileName = file.getName();
-				String font = fileName.substring(0, fileName.indexOf("-")+1);
+				String font = fileName.substring(0, fileName.indexOf("-") + 1);
 				String tail = fileName.substring(fileName.indexOf("_"));
 				String newFileName = font + faceName + tail;
 				CommonUtil.rename(CommonUtil.getFilePath("BEAD", head.getName(), face.getName()), fileName, newFileName);
@@ -108,6 +115,7 @@ public class FaceService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	/**
 	 * 根据项目ID查询模块
 	 * @param headId
@@ -118,15 +126,16 @@ public class FaceService extends SelectService {
 	public ResultUtil select(Integer headId, Integer currentPage, Integer pageSize) {
 		PageUtil<FaceVO> pageUtil = new PageUtil<>();
 		Page<Record> pageRecord = new Page<>();
-		List<FaceVO> list = new ArrayList<FaceVO>();
+		List<FaceVO> faceVOs = new ArrayList<FaceVO>();
 		String filter = "head_Id = " + headId;
 		String tables = "face";
 		pageRecord = selectService.select(tables, currentPage, pageSize, null, null, filter, null);
-		list = FaceVO.fillList(pageRecord.getList());
-		pageUtil.fill(pageRecord, list);
+		faceVOs = FaceVO.fillList(pageRecord.getList());
+		pageUtil.fill(pageRecord, faceVOs);
 		return ResultUtil.succeed(pageUtil);
 
 	}
+
 
 	/**
 	 * 查询应用某模块的设备端信息
@@ -144,43 +153,44 @@ public class FaceService extends SelectService {
 		Page<Record> pageRecord = new Page<>();
 		String[] table = {"bead", "finger", "head", "face"};
 		String[] refers = {"finger.bead_id = bead.id", "bead.face_id = face.id", "face.head_id = head.id"};
-		String[] discard = {"face.id", "head.id", "face.head_id"};
+		String[] discards = {"face.id", "head.id", "face.head_id"};
 		String filter = "";
 		PageUtil<FingerAndBeadVO> pageUtil = new PageUtil<>();
 		filter += "face_id = " + faceId;
 		if (firstCode == null) {
-			pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discard);
+			pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discards);
 			list = FingerAndBeadVO.fillList(pageRecord.getList());
 			pageUtil.fill(pageRecord, list);
 			return ResultUtil.succeed(pageUtil);
 		}
 		filter += "&first_code = " + firstCode;
 		if (secondCode == null) {
-			pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discard);
+			pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discards);
 			list = FingerAndBeadVO.fillList(pageRecord.getList());
 			pageUtil.fill(pageRecord, list);
 			return ResultUtil.succeed(pageUtil);
 		}
 		filter += "&second_code = " + secondCode;
 		if (debugCode == null) {
-			pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discard);
+			pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discards);
 			list = FingerAndBeadVO.fillList(pageRecord.getList());
 			pageUtil.fill(pageRecord, list);
 			return ResultUtil.succeed(pageUtil);
 		}
 		filter += "&debug_code = " + debugCode;
 		if (suffixTime == null) {
-			pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discard);
+			pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discards);
 			list = FingerAndBeadVO.fillList(pageRecord.getList());
 			pageUtil.fill(pageRecord, list);
 			return ResultUtil.succeed(pageUtil);
 		}
 		filter += "&suffix_time = " + suffixTime;
-		pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discard);
+		pageRecord = selectService.select(table, refers, currentPage, pageSize, null, null, filter, discards);
 		list = FingerAndBeadVO.fillList(pageRecord.getList());
 		pageUtil.fill(pageRecord, list);
 		return ResultUtil.succeed(pageUtil);
 	}
+
 
 	/**
 	 * 删除模块
@@ -203,6 +213,7 @@ public class FaceService extends SelectService {
 		return ResultUtil.succeed();
 	}
 
+
 	/**
 	 * 发布软件包
 	 * @param armName
@@ -213,18 +224,18 @@ public class FaceService extends SelectService {
 	public ResultUtil publish(String armName, String fingerName, Integer beadId) {
 		Bead bead = BeadService.me.selectById(beadId);
 		String result = "";
-		short controllId = ArmClient.genControllId();
+		short controlId = ArmClient.genControllId();
 		if (bead != null) {
 			ArmClient armClient = Bude.armClientMap.get(armName);
 			if (armClient != null) {
-				Infomation info = new Infomation();
+				Information info = new Information();
 				info.setArmName(armName);
 				info.setFingerName(fingerName);
-				info.setType(ControllType.UPDATE);
+				info.setType(ControlType.UPDATE);
 				info.setBeadId(beadId);
 				UpdatePackage update = new UpdatePackage();
-				Bude.controllMap.put(controllId, info);
-				update.setControllId(controllId);
+				Bude.InformationMap.put(controlId, info);
+				update.setControllId(controlId);
 				update.setFingerName(fingerName);
 				System.out.println(bead.getStr("head_name") + "  aa  " + bead.getStr("face_name"));
 				update.setHeadName(bead.getStr("head_name"));
@@ -235,7 +246,7 @@ public class FaceService extends SelectService {
 				update.setSuffixTime(bead.getSuffixTime());
 				update.setMd5(StringUtil.stretch(bead.getMd5(), 2));
 				CountDownLatch countDownLatch = new CountDownLatch(1);
-				Bude.countDownMap.put(controllId, countDownLatch);
+				Bude.countDownMap.put(controlId, countDownLatch);
 				armClient.sendUpdatePackage(update);
 				// 定时器待填充
 				try {
@@ -252,11 +263,11 @@ public class FaceService extends SelectService {
 				result = "the arm is not online";
 			}
 		} else {
-			Bude.countDownMap.remove(controllId);
+			Bude.countDownMap.remove(controlId);
 			result = "the bead is not exist";
 			throw new OperationException(result);
 		}
-		Bude.countDownMap.remove(controllId);
+		Bude.countDownMap.remove(controlId);
 		return ResultUtil.succeed(result);
 	}
 }

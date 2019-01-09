@@ -8,6 +8,7 @@ import com.jimi.bude.pack.PingPackage;
 import com.jimi.bude.socket.ArmClient;
 import com.jimi.bude.socket.Bude;
 
+
 /**
  * Ping定时器：搜索在线的中转端并进行ping操作，判断是否掉线
  * @type PingTimer
@@ -16,10 +17,12 @@ import com.jimi.bude.socket.Bude;
  * @date 2018年10月10日
  */
 public class PingTimer {
+
 	// 两份钟ping一次
 	private final static Integer DELAY_TIME = 60000;
 	private final static Integer PERIOD_TIME = 10000;
 	private static Timer timer = new Timer();
+
 
 	public static void start() {
 		timer.schedule(new TimerTask() {
@@ -37,6 +40,7 @@ public class PingTimer {
 			}
 		}, DELAY_TIME, PERIOD_TIME);
 	}
+
 
 	public static void stop() {
 		timer.cancel();

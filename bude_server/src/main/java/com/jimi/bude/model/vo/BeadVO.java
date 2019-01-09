@@ -6,7 +6,9 @@ import java.util.List;
 import com.jfinal.plugin.activerecord.Record;
 import com.jimi.bude.model.Bead;
 
+
 public class BeadVO {
+
 	private Integer id;
 	private Integer faceId;
 	private String alias;
@@ -17,77 +19,96 @@ public class BeadVO {
 	private String suffixTime;
 	private String updateDescribe;
 
+
 	public Integer getId() {
 		return id;
 	}
+
 
 	public void setId(Integer id) {
 		this.id = id;
 	}
 
+
 	public Integer getFaceId() {
 		return faceId;
 	}
+
 
 	public void setFaceId(Integer faceId) {
 		this.faceId = faceId;
 	}
 
+
 	public String getAlias() {
 		return alias;
 	}
+
 
 	public void setAlias(String alias) {
 		this.alias = alias;
 	}
 
+
 	public String getMd5() {
 		return md5;
 	}
+
 
 	public void setMd5(String md5) {
 		this.md5 = md5;
 	}
 
+
 	public Integer getFirstCode() {
 		return firstCode;
 	}
+
 
 	public void setFirstCode(Integer firstCode) {
 		this.firstCode = firstCode;
 	}
 
+
 	public Integer getSecondCode() {
 		return secondCode;
 	}
+
 
 	public void setSecondCode(Integer secondCode) {
 		this.secondCode = secondCode;
 	}
 
+
 	public Integer getDebugCode() {
 		return debugCode;
 	}
+
 
 	public void setDebugCode(Integer debugCode) {
 		this.debugCode = debugCode;
 	}
 
+
 	public String getSuffixTime() {
 		return suffixTime;
 	}
+
 
 	public void setSuffixTime(String suffixTime) {
 		this.suffixTime = suffixTime;
 	}
 
+
 	public String getUpdateDescribe() {
 		return updateDescribe;
 	}
 
+
 	public void setUpdateDescribe(String updateDescribe) {
 		this.updateDescribe = updateDescribe;
 	}
+
 
 	public static List<BeadVO> fillList(List<Record> records) {
 		List<BeadVO> list = new ArrayList<BeadVO>();
@@ -107,7 +128,8 @@ public class BeadVO {
 		return list;
 	}
 
-	public static List<BeadVO> filListByBead(List<Bead> records) {
+
+	public static List<BeadVO> fillListByBead(List<Bead> records) {
 		List<BeadVO> list = new ArrayList<BeadVO>();
 		for (Bead record : records) {
 			BeadVO bead = new BeadVO();
